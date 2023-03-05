@@ -6,5 +6,10 @@ public class App extends JavaPlugin {
     @Override
     public void onEnable() {
         getLogger().info("MCTreasureHuntPlugin is now enabled!");
+        this.registerEventListeners();
+    }
+
+    private void registerEventListeners() {
+        EventListener.register(this);
     }
 }

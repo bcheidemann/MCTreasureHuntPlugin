@@ -4,7 +4,7 @@
   <classpathentry kind="src" path="src/main/resources" including="plugin.yml" excluding="**/*.java"/>
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-  <classpathentry kind="var" path="M2_REPO/org/spigotmc/spigot-api/1.19.3-R0.1-SNAPSHOT/spigot-api-1.19.3-R0.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/spigotmc/spigot-api/1.19.3-R0.1-SNAPSHOT/spigot-api-1.19.3-R0.1-SNAPSHOT.jar" sourcepath="M2_REPO/org/spigotmc/spigot-api/1.19.3-R0.1-SNAPSHOT/spigot-api-1.19.3-R0.1-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar"/>
