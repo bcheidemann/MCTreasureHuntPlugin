@@ -5,7 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.Plugin;
 
-// An example event listener to 
+// An example event listener to show how to use the ActionBarManager
 public class EventListener implements Listener {
     public static void register(Plugin plugin) {
         plugin.getServer().getPluginManager().registerEvents(new EventListener(), plugin);
