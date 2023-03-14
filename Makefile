@@ -22,3 +22,6 @@ start-server:
 
 watch:
 	./scripts/watch.sh
+
+format:
+	./scripts/format.sh --replace

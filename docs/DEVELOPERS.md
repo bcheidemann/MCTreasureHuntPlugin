@@ -55,3 +55,11 @@ Now, when a source file is saved, the plugin will be re-built from source, copie
 You will first need to install the Red Hat Java VSCode extension. Once this is installed, to debug the plugin in VSCode, first [start the development server](#running-the-development-server), then run the `Attach` configuration from the `Run and Debug` tab. You can then set breakpoints, inspect variables, step through the source, etc.
 
 Note that the server will spam errors if you hit a breakpoint. These can be ignored. After 10 minutes if you do not continue, the server will shut down with an error. The client will also disconnect after a short interval if it does not receive a response from the server.
+
+## Contributing
+
+When contributing changes:
+
+1. Branch off from `main`
+2. Format files using `make format` before raising a PR
+3. Once your PR has been approved, use the "Squash and Merge" strategy
