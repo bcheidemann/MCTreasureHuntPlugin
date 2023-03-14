@@ -2,6 +2,8 @@ package uk.co.catlord.spigot.MCTreasureHuntPlugin;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetTreasureChestCommand;
+
 public class App extends JavaPlugin {
     public static App instance;
 
@@ -13,7 +15,13 @@ public class App extends JavaPlugin {
     }
 
     private void register() {
+        // Event Listeners
         EventListener.register(this);
+
+        // Managers
         TreasureChestManager.register(this);
+
+        // Commands
+        new SetTreasureChestCommand().register(this);
     }
 }
