@@ -19,6 +19,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TreasureChestUtils;
+
 public class TreasureChestManager implements Listener {
     private HashMap<UUID, Inventory> treasureChestInventories = new HashMap<>();
 
@@ -52,9 +54,7 @@ public class TreasureChestManager implements Listener {
     }
 
     private boolean isBlockTreasureChest(Block block) {
-        return (block.getType() == Material.CHEST ||
-                block.getType() == Material.TRAPPED_CHEST ||
-                block.getType() == Material.BARREL);
+        return TreasureChestUtils.isBlockTreasureChest(block);
     }
 
     @EventHandler

@@ -2,3 +2,7 @@ main: uk.co.catlord.spigot.MCTreasureHuntPlugin.App
 name: MCTreasureHuntPlugin
 version: 0.1.0
 api-version: 1.19
+commands:
+  set-treasure-chest:
+    description: Sets a chest as a treasure chest
+    usage: "Usage: /set-treasure-chest <x> <y> <z>"
