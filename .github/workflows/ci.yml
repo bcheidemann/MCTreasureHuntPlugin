@@ -1,0 +1,24 @@
+on:
+  pull_request:
+    branch:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Lint
+        run: |
+          ./scripts/format.sh --replace
+          DIFF="$(git diff)"
+          if [[ $DIFF != "" ]];
+          then
+            git diff
+            echo "Linting failed. Run 'make format' and commit the changes."
+            exit 1
+          else
+            echo "Linting passed."
+          fi
