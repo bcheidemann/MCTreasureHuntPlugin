@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+        type: string
+      commit:
+        description: 'Full commit hash'
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: |
+        make build
+
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "target/MCTreasureHuntPlugin-1.0.jar"
+        commit: ${{ inputs.commit }}
+        generateReleaseNotes: true
+        tag: ${{ inputs.version }}
