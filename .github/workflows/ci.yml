@@ -12,7 +12,7 @@ jobs:
 
       - name: Lint
         run: |
-          ./scripts/format.sh --replace
+          make format
           DIFF="$(git diff)"
           if [[ $DIFF != "" ]];
           then
@@ -22,3 +22,13 @@ jobs:
           else
             echo "Linting passed."
           fi
+  
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Build
+        run: |
+          make build
