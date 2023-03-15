@@ -6,7 +6,7 @@
 
   <groupId>uk.co.catlord.spigot.MCTreasureHuntPlugin</groupId>
   <artifactId>MCTreasureHuntPlugin</artifactId>
-  <version>1.0</version>
+  <version>latest</version>
   <name>MCTreasureHuntPlugin</name>
   <packaging>jar</packaging>
 
