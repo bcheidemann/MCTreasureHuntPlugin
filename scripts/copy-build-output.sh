@@ -2,5 +2,5 @@
 projectDir=$PWD
 serverDir="$projectDir/server/1.19.3"
 
-rm $serverDir/plugins/MCTreasureHuntPlugin-1.0.jar
-cp target/MCTreasureHuntPlugin-1.0.jar server/1.19.3/plugins/MCTreasureHuntPlugin-1.0.jar
+rm $serverDir/plugins/MCTreasureHuntPlugin-latest.jar
+cp target/MCTreasureHuntPlugin-latest.jar server/1.19.3/plugins/MCTreasureHuntPlugin-latest.jar

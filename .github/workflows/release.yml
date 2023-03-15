@@ -15,8 +15,10 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -25,9 +27,18 @@ jobs:
       run: |
         make build
 
+    - name: Prepare Build Artifacts
+      id: prepare-build-artifacts
+      env:
+        VERSION: ${{ inputs.version }}
+      run: |
+        PLUGIN_ARTIFACT_PATH="target/MCTreasureHuntPlugin-$VERSION.jar"
+        mv "target/MCTreasureHuntPlugin-latest.jar" "$PLUGIN_ARTIFACT_PATH"
+        echo "plugin-artifact-path=$PLUGIN_ARTIFACT_PATH" >> $GITHUB_OUTPUT
+
     - uses: ncipollo/release-action@v1
       with:
-        artifacts: "target/MCTreasureHuntPlugin-1.0.jar"
+        artifacts: ${{ steps.prepare-build-artifacts.outputs.plugin-artifact-path }}
         commit: ${{ inputs.commit }}
         generateReleaseNotes: true
         tag: ${{ inputs.version }}
