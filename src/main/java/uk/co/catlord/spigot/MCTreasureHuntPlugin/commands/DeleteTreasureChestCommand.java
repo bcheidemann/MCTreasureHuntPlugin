@@ -3,19 +3,18 @@ package uk.co.catlord.spigot.MCTreasureHuntPlugin.commands;
 import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
-import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChest;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChestDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.CommandUtils;
-import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TreasureChestUtils;
 
-public class SetTreasureChestCommand extends RegisterableCommand {
+public class DeleteTreasureChestCommand extends RegisterableCommand {
   @Override
   public String getName() {
-    return "set-treasure-chest";
+    return "delete-treasure-chest";
   }
 
   @Override
@@ -34,17 +33,19 @@ public class SetTreasureChestCommand extends RegisterableCommand {
       return true;
     }
 
-    // Create the treasure chest
-    TreasureChest treasureChest = new TreasureChest(options.location);
-    Result<?, String> result = TreasureChestDataStore.getStore().addTreasureChest(treasureChest);
+    // Remove the treasure chest
+    Result<?, String> result =
+        TreasureChestDataStore.getStore().removeTreasureChest(options.location);
 
     // Feedback to the player
     if (result.isError()) {
       options.player.sendMessage(
-          ChatColor.RED + "Failed to set treasure chest: " + result.getError());
-    } else {
-      options.player.sendMessage(ChatColor.GREEN + "Treasure chest set successfully.");
+          ChatColor.RED + "Failed to delete treasure chest: " + result.getError());
+      return true;
     }
+
+    options.location.getBlock().setType(Material.AIR);
+    options.player.sendMessage(ChatColor.GREEN + "Treasure chest set successfully.");
 
     // Return true
     return true;
@@ -102,13 +103,12 @@ public class SetTreasureChestCommand extends RegisterableCommand {
     // Create the location object
     Location location = new Location(player.getWorld(), x, y, z);
 
-    // Ensure the location is a valid block location
-    if (!TreasureChestUtils.isBlockTreasureChestLike(location.getBlock())) {
+    // Ensure there is a treasure chest registered at the location
+    if (!TreasureChestDataStore.getStore().isTreasureChestRegistered(location)) {
       sender.sendMessage(
-          ChatColor.RED
-              + "The location must be a chest or barrel. ("
-              + location.getBlock().getType().toString()
-              + ")");
+          ChatColor.YELLOW
+              + "The location is not a registered treasure chest. Use /set-treasure-chest to"
+              + " register a treasure chest.");
       return null;
     }
 

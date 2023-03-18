@@ -9,3 +9,6 @@ commands:
   set-treasure-chest:
     description: Sets a chest as a treasure chest
     usage: "Usage: /set-treasure-chest <x> <y> <z>"
+  delete-treasure-chest:
+    description: Deletes a treasure chest
+    usage: "Usage: /delete-treasure-chest <x> <y> <z>"

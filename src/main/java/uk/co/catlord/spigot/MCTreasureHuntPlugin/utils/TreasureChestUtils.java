@@ -17,6 +17,6 @@ public class TreasureChestUtils {
 
   public static boolean isBlockTreasureChest(Block block) {
     return isBlockTreasureChestLike(block)
-        && TreasureChestDataStore.getStore().doesTreasureChestExist(block.getLocation());
+        && TreasureChestDataStore.getStore().isTreasureChestRegistered(block.getLocation());
   }
 }
