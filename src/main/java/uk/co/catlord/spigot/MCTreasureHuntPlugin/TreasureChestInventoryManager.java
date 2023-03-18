@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.PlayerUtils;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TreasureChestUtils;
 
 public class TreasureChestInventoryManager implements Listener {
@@ -76,7 +77,7 @@ public class TreasureChestInventoryManager implements Listener {
       ItemStack itemStack;
       ListIterator<ItemStack> iterator = inventory.iterator();
       while ((itemStack = iterator.next()) != null) {
-        player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
+        PlayerUtils.givePlayerItemStack((Player) player, itemStack);
       }
       inventory.clear();
     }

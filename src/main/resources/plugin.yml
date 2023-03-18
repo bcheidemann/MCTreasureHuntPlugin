@@ -3,6 +3,9 @@ name: MCTreasureHuntPlugin
 version: dev
 api-version: 1.19
 commands:
+  give-treasure-token:
+    description: Gives a player some number of treasure tokens
+    usage: "Usage: /give-treasure-token <count>"
   set-treasure-chest:
     description: Sets a chest as a treasure chest
     usage: "Usage: /set-treasure-chest <x> <y> <z>"
