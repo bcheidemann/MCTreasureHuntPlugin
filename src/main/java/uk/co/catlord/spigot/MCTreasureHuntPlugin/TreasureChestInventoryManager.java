@@ -19,11 +19,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TreasureChestUtils;
 
-public class TreasureChestManager implements Listener {
+public class TreasureChestInventoryManager implements Listener {
   private HashMap<UUID, Inventory> treasureChestInventories = new HashMap<>();
 
   public static void register(JavaPlugin plugin) {
-    plugin.getServer().getPluginManager().registerEvents(new TreasureChestManager(), plugin);
+    plugin
+        .getServer()
+        .getPluginManager()
+        .registerEvents(new TreasureChestInventoryManager(), plugin);
   }
 
   @EventHandler
@@ -56,10 +59,7 @@ public class TreasureChestManager implements Listener {
   @EventHandler
   public void onChestOpen(PlayerInteractEvent event) {
     if (event.getAction() == Action.RIGHT_CLICK_BLOCK
-        && isBlockTreasureChest(event.getClickedBlock())
-    // TODO: Check if this location is configured as a treasure chest
-    // TODO: Check if the player has not already opened a treasure chest
-    ) {
+        && isBlockTreasureChest(event.getClickedBlock())) {
       event.setCancelled(true);
       Player player = event.getPlayer();
       Inventory inventory = getTereasureChestInventoryForPlayer(player);
@@ -72,7 +72,6 @@ public class TreasureChestManager implements Listener {
   public void onCloseChest(InventoryCloseEvent event) {
     Inventory inventory = event.getInventory();
     if (isTreasureChestInventory(event.getPlayer(), inventory)) {
-      App.instance.getServer().broadcastMessage("Treasure chest inventory closed");
       HumanEntity player = event.getPlayer();
       ItemStack itemStack;
       ListIterator<ItemStack> iterator = inventory.iterator();

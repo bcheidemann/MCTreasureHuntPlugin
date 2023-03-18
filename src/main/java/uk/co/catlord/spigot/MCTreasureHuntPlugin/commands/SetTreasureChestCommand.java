@@ -2,11 +2,18 @@ package uk.co.catlord.spigot.MCTreasureHuntPlugin.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.App;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChest;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChestDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TreasureChestUtils;
 
 public class SetTreasureChestCommand extends RegisterableCommand {
@@ -35,7 +42,7 @@ public class SetTreasureChestCommand extends RegisterableCommand {
     }
 
     // Exit early if the block is not a treasure chest
-    if (!TreasureChestUtils.isBlockTreasureChest(location.getBlock())) {
+    if (!TreasureChestUtils.isBlockTreasureChestLike(location.getBlock())) {
       return List.of();
     }
 
@@ -66,15 +73,30 @@ public class SetTreasureChestCommand extends RegisterableCommand {
       return true;
     }
 
-    // TODO: Set the treasure chest location
-    options.player.sendMessage(
-        "Treasure chest set at "
-            + options.location.getBlockX()
-            + ", "
-            + options.location.getBlockY()
-            + ", "
-            + options.location.getBlockZ()
-            + ".");
+    // Create the treasure chest
+    TreasureChest treasureChest = new TreasureChest(options.location);
+    Result<?, String> result = TreasureChestDataStore.getStore().addTreasureChest(treasureChest);
+
+    // Feedback to the player
+    if (result.isError()) {
+      options.player.sendMessage(
+          ChatColor.RED + "Failed to set treasure chest: " + result.getError());
+    } else {
+      options.player.sendMessage(ChatColor.GREEN + "Treasure chest set successfully.");
+
+      // Flash the treasure chest block to indicate it has been set
+      Material material = options.location.getBlock().getType();
+      BlockData blockData = options.location.getBlock().getBlockData();
+      treasureChest.location.getWorld().setType(treasureChest.location, Material.EMERALD_BLOCK);
+      Bukkit.getScheduler()
+          .runTaskLater(
+              App.instance,
+              () -> {
+                treasureChest.location.getWorld().setType(treasureChest.location, material);
+                treasureChest.location.getWorld().setBlockData(treasureChest.location, blockData);
+              },
+              10);
+    }
 
     // Return true
     return true;
@@ -133,7 +155,7 @@ public class SetTreasureChestCommand extends RegisterableCommand {
     Location location = new Location(player.getWorld(), x, y, z);
 
     // Ensure the location is a valid block location
-    if (!TreasureChestUtils.isBlockTreasureChest(location.getBlock())) {
+    if (!TreasureChestUtils.isBlockTreasureChestLike(location.getBlock())) {
       sender.sendMessage(
           ChatColor.RED
               + "The location must be a chest or barrel. ("
@@ -141,8 +163,6 @@ public class SetTreasureChestCommand extends RegisterableCommand {
               + ")");
       return null;
     }
-
-    // TODO: Validate that there is not already a treasure chest at this location
 
     // Create the command options object
     CommandOptions options = new CommandOptions();
