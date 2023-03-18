@@ -29,7 +29,7 @@ Run the following command to setup the development server.
 IMPORTANT: By running setup-server, you are agreeing to the Minecraft EULA (https://aka.ms/MinecraftEULA).
 
 ```sh
-make dev-setup-server
+make setup-server
 ```
 
 ## Running the Development Server
