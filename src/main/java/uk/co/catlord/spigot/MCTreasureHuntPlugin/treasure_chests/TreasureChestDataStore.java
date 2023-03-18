@@ -103,12 +103,23 @@ public class TreasureChestDataStore extends JsonDataStore {
   }
 
   public Result<Boolean, String> addTreasureChest(TreasureChest treasureChest) {
-    if (doesTreasureChestExist(treasureChest)) {
+    if (isTreasureChestRegistered(treasureChest)) {
       return Result.error("Treasure chest already exists");
     }
 
     treasureChests.add(treasureChest);
     return saveTreasureChests();
+  }
+
+  public Result<Boolean, String> removeTreasureChest(Location location) {
+    for (TreasureChest treasureChest : treasureChests) {
+      if (treasureChest.location.equals(location)) {
+        treasureChests.remove(treasureChest);
+        return saveTreasureChests();
+      }
+    }
+
+    return Result.error("Treasure chest not found");
   }
 
   private Result<Boolean, String> saveTreasureChests() {
@@ -137,7 +148,7 @@ public class TreasureChestDataStore extends JsonDataStore {
     return Result.ok(true);
   }
 
-  public boolean doesTreasureChestExist(TreasureChest treasureChest) {
+  public boolean isTreasureChestRegistered(TreasureChest treasureChest) {
     for (TreasureChest existingTreasureChest : this.treasureChests) {
       if (existingTreasureChest.equals(treasureChest)) {
         return true;
@@ -147,7 +158,7 @@ public class TreasureChestDataStore extends JsonDataStore {
     return false;
   }
 
-  public boolean doesTreasureChestExist(Location location) {
+  public boolean isTreasureChestRegistered(Location location) {
     for (TreasureChest existingTreasureChest : this.treasureChests) {
       if (existingTreasureChest.location.equals(location)) {
         return true;
