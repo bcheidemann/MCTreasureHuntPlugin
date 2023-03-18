@@ -12,5 +12,5 @@ mkdir $serverDir/plugins
 echo "Creating plugin config directory..."
 mkdir -p $serverDir/plugins/MCTreasureHuntPlugin
 echo "Copying plugin config..."
-echo "cp $projectDir/config/checkpoints.json $serverDir/plugins/MCTreasureHuntPlugin/checkpoints.json"
+echo "cp $projectDir/config/* $serverDir/plugins/MCTreasureHuntPlugin/"
 echo "Done."

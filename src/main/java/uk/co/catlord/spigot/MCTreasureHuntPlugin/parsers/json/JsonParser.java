@@ -11,7 +11,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReportBuilder;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 
 public class JsonParser {
-  public static Result<Location, ErrorReport<ErrorPathContext>> parseLocation(
+  public static Result<Location, ErrorReport<ErrorPathContext>> parseLocationJson(
       ErrorPathContext context, JSONObject value) {
     boolean hasX = value.has("x");
     boolean hasY = value.has("y");
@@ -48,8 +48,8 @@ public class JsonParser {
         x = value.getDouble("x");
       } catch (Exception e) {
         error = true;
-        errorReportBuilder.addDetail(
-            new ErrorDetail("Failed to parse key 'x' as a number: " + e.getMessage()));
+        errorReportBuilder
+            .addDetail(new ErrorDetail("Failed to parse key 'x' as a number: " + e.getMessage()));
       }
     }
 
@@ -59,8 +59,8 @@ public class JsonParser {
         y = value.getDouble("y");
       } catch (Exception e) {
         error = true;
-        errorReportBuilder.addDetail(
-            new ErrorDetail("Failed to parse key 'y' as a number: " + e.getMessage()));
+        errorReportBuilder
+            .addDetail(new ErrorDetail("Failed to parse key 'y' as a number: " + e.getMessage()));
       }
     }
 
@@ -70,8 +70,8 @@ public class JsonParser {
         z = value.getDouble("z");
       } catch (Exception e) {
         error = true;
-        errorReportBuilder.addDetail(
-            new ErrorDetail("Failed to parse key 'z' as a number: " + e.getMessage()));
+        errorReportBuilder
+            .addDetail(new ErrorDetail("Failed to parse key 'z' as a number: " + e.getMessage()));
       }
     }
 
@@ -81,8 +81,8 @@ public class JsonParser {
         worldName = value.getString("world");
       } catch (Exception e) {
         error = true;
-        errorReportBuilder
-            .addDetail(new ErrorDetail("Failed to parse key 'world' as a string: " + e.getMessage()));
+        errorReportBuilder.addDetail(
+            new ErrorDetail("Failed to parse key 'world' as a string: " + e.getMessage()));
       }
     }
 
@@ -93,10 +93,20 @@ public class JsonParser {
     World world = Bukkit.getWorld(worldName);
 
     if (world == null) {
-      return Result.error(errorReportBuilder
-          .addDetail(new ErrorReport<ErrorPathContext>(context.extend("world"), "Failed to find world '" + worldName + "'")).build());
+      return Result.error(
+          errorReportBuilder.addDetail(new ErrorReport<ErrorPathContext>(context.extend("world"),
+              "Failed to find world '" + worldName + "'")).build());
     }
 
     return Result.ok(new Location(world, x, y, z));
+  }
+
+  public static JSONObject generateLocationJson(Location location) {
+    JSONObject result = new JSONObject();
+    result.put("x", location.getX());
+    result.put("y", location.getY());
+    result.put("z", location.getZ());
+    result.put("world", location.getWorld().getName());
+    return result;
   }
 }

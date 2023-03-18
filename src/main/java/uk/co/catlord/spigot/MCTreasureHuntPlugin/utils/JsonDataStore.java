@@ -22,8 +22,21 @@ public abstract class JsonDataStore {
     } catch (Exception error) {
       return Result.error(
           new ErrorReport<>(
-              new ErrorPathContext(getDataFileName()),
-              "Failed to load checkpoints: " + error.getMessage()));
+              new ErrorPathContext(getDataFilePath()),
+              "Failed to load JSON file: " + error.getMessage()));
+    }
+  }
+
+  protected Result<Boolean, ErrorReport<ErrorPathContext>> save() {
+    Result<?, Exception> result = JsonFileLoader.saveJSONObject(getDataFilePath(), data);
+
+    if (result.isOk()) {
+      return Result.ok(true);
+    } else {
+      return Result.error(
+          new ErrorReport<>(
+              new ErrorPathContext(getDataFilePath()),
+              "Failed to save JSON file: " + result.getError().getMessage()));
     }
   }
 }
