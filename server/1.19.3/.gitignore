@@ -1,0 +1,5 @@
+*
+!.gitignore
+!paper-1.19.3-365.jar
+!server.properties
+!spigot.yml

@@ -20,25 +20,31 @@ jobs:
       contents: write
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Build
-      run: |
-        make build
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: Prepare Build Artifacts
-      id: prepare-build-artifacts
-      env:
-        VERSION: ${{ inputs.version }}
-      run: |
-        PLUGIN_ARTIFACT_PATH="target/MCTreasureHuntPlugin-$VERSION.jar"
-        mv "target/MCTreasureHuntPlugin-latest.jar" "$PLUGIN_ARTIFACT_PATH"
-        echo "plugin-artifact-path=$PLUGIN_ARTIFACT_PATH" >> $GITHUB_OUTPUT
+      - name: Build
+        run: |
+          make build
 
-    - uses: ncipollo/release-action@v1
-      with:
-        artifacts: ${{ steps.prepare-build-artifacts.outputs.plugin-artifact-path }}
-        commit: ${{ inputs.commit }}
-        generateReleaseNotes: true
-        tag: ${{ inputs.version }}
+      - name: Prepare Build Artifacts
+        id: prepare-build-artifacts
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          PLUGIN_ARTIFACT_PATH="target/MCTreasureHuntPlugin-$VERSION.jar"
+          mv "target/MCTreasureHuntPlugin-latest.jar" "$PLUGIN_ARTIFACT_PATH"
+          echo "plugin-artifact-path=$PLUGIN_ARTIFACT_PATH" >> $GITHUB_OUTPUT
+
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: ${{ steps.prepare-build-artifacts.outputs.plugin-artifact-path }}
+          commit: ${{ inputs.commit }}
+          generateReleaseNotes: true
+          tag: ${{ inputs.version }}

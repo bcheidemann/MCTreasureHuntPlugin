@@ -15,4 +15,5 @@
   <classpathentry kind="var" path="M2_REPO/com/google/code/gson/gson/2.10/gson-2.10.jar"/>
   <classpathentry kind="var" path="M2_REPO/net/md-5/bungeecord-chat/1.16-R0.4/bungeecord-chat-1.16-R0.4.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/yaml/snakeyaml/1.33/snakeyaml-1.33.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/json/json/20220924/json-20220924.jar"/>
 </classpath>
