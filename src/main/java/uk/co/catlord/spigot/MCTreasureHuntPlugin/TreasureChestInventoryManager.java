@@ -1,11 +1,13 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin;
 
 import java.util.HashMap;
-import java.util.ListIterator;
 import java.util.UUID;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,10 +38,21 @@ public class TreasureChestInventoryManager implements Listener {
     treasureChestInventories.remove(player.getUniqueId());
   }
 
+  public Inventory getEmptyTreasureChestInventoryForPlayer(HumanEntity player) {
+    return getTereasureChestInventoryForPlayer(player, true);
+  }
+
   public Inventory getTereasureChestInventoryForPlayer(HumanEntity player) {
+    return getTereasureChestInventoryForPlayer(player, false);
+  }
+
+  public Inventory getTereasureChestInventoryForPlayer(HumanEntity player, boolean ensureEmpty) {
     player.getUniqueId();
     Inventory inventory = treasureChestInventories.get(player.getUniqueId());
     if (inventory != null) {
+      if (ensureEmpty) {
+        inventory.clear();
+      }
       return inventory;
     }
     inventory = Bukkit.createInventory(player, 9, "Treasure Chest");
@@ -57,14 +70,41 @@ public class TreasureChestInventoryManager implements Listener {
     return TreasureChestUtils.isBlockTreasureChest(block);
   }
 
+  private Inventory getTreasureChestBlockInventory(Block block) {
+    BlockState blockState = block.getState();
+
+    if (blockState instanceof Chest) {
+      Chest chest = (Chest) blockState;
+      return chest.getInventory();
+    }
+
+    if (blockState instanceof DoubleChest) {
+      DoubleChest doubleChest = (DoubleChest) blockState;
+      return doubleChest.getInventory();
+    }
+
+    if (blockState instanceof Barrel) {
+      Barrel barrel = (Barrel) blockState;
+      return barrel.getInventory();
+    }
+
+    return null;
+  }
+
   @EventHandler
   public void onChestOpen(PlayerInteractEvent event) {
     if (event.getAction() == Action.RIGHT_CLICK_BLOCK
         && isBlockTreasureChest(event.getClickedBlock())) {
       event.setCancelled(true);
       Player player = event.getPlayer();
-      Inventory inventory = getTereasureChestInventoryForPlayer(player);
-      inventory.addItem(new ItemStack(Material.DIAMOND, 1));
+      Inventory inventory = getEmptyTreasureChestInventoryForPlayer(player);
+      Inventory templateInventory = getTreasureChestBlockInventory(event.getClickedBlock());
+      for (int i = 0; i < 9; i++) {
+        ItemStack itemStack = templateInventory.getItem(i);
+        if (itemStack != null) {
+          inventory.setItem(i, itemStack.clone());
+        }
+      }
       player.openInventory(inventory);
     }
   }
@@ -75,9 +115,11 @@ public class TreasureChestInventoryManager implements Listener {
     if (isTreasureChestInventory(event.getPlayer(), inventory)) {
       HumanEntity player = event.getPlayer();
       ItemStack itemStack;
-      ListIterator<ItemStack> iterator = inventory.iterator();
-      while ((itemStack = iterator.next()) != null) {
-        PlayerUtils.givePlayerItemStack((Player) player, itemStack);
+      for (int i = 0; i < 9; i++) {
+        itemStack = inventory.getItem(i);
+        if (itemStack != null) {
+          PlayerUtils.givePlayerItemStack((Player) player, itemStack);
+        }
       }
       inventory.clear();
     }
