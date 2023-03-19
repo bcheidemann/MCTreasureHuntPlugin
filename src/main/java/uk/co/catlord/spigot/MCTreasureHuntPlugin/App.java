@@ -30,6 +30,7 @@ public class App extends JavaPlugin {
 
     // Managers
     TreasureChestInventoryManager.register(this);
+    TreasureChestBlockManager.register(this);
 
     // Commands
     new GiveTreasureTokenCommand().register(this);
