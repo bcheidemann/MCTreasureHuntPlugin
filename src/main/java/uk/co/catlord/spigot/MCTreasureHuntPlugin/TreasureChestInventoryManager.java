@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.PlayerUtils;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TreasureChestUtils;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TreasureTokenUtils;
 
 public class TreasureChestInventoryManager implements Listener {
   private HashMap<UUID, Inventory> treasureChestInventories = new HashMap<>();
@@ -99,13 +100,18 @@ public class TreasureChestInventoryManager implements Listener {
       Player player = event.getPlayer();
       Inventory inventory = getEmptyTreasureChestInventoryForPlayer(player);
       Inventory templateInventory = getTreasureChestBlockInventory(event.getClickedBlock());
+      int points = 0;
       for (int i = 0; i < 27; i++) {
         ItemStack itemStack = templateInventory.getItem(i);
         if (itemStack != null) {
           inventory.setItem(i, itemStack.clone());
+          if (TreasureTokenUtils.isTreasureTokenItemStack(itemStack)) {
+            points += itemStack.getAmount();
+          }
         }
       }
       player.openInventory(inventory);
+      PlayerUtils.givePlayerPoints(player, points);
     }
   }
 
@@ -118,7 +124,7 @@ public class TreasureChestInventoryManager implements Listener {
       for (int i = 0; i < 27; i++) {
         itemStack = inventory.getItem(i);
         if (itemStack != null) {
-          PlayerUtils.givePlayerItemStack((Player) player, itemStack);
+          PlayerUtils.givePlayerItemStack(player, itemStack);
         }
       }
       inventory.clear();

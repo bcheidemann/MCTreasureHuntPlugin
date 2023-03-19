@@ -8,6 +8,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetTreasureChestComman
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerTrackerDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChestDataStore;
 
 public class App extends JavaPlugin {
@@ -25,8 +26,8 @@ public class App extends JavaPlugin {
   }
 
   private boolean register() {
-    // Event Listeners
-    EventListener.register(this);
+    // Scheduled Tasks
+    PlayerActionBarDisplayManager.register(this);
 
     // Managers
     TreasureChestInventoryManager.register(this);
@@ -45,6 +46,14 @@ public class App extends JavaPlugin {
 
     {
       Result<Boolean, ErrorReport<ErrorPathContext>> result = CheckpointDataStore.initialize();
+      if (result.isError()) {
+        getLogger().warning(result.getError().pretty());
+        error = true;
+      }
+    }
+
+    {
+      Result<Boolean, ErrorReport<ErrorPathContext>> result = PlayerTrackerDataStore.initialize();
       if (result.isError()) {
         getLogger().warning(result.getError().pretty());
         error = true;
