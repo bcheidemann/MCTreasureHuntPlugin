@@ -1,6 +1,9 @@
 {
   "treasureChests": [
     {
+      "id": "<uuid>",
+      "displayName": "Treasure Chest",
+      "type": "TREASURE_CHEST",
       "location": {
         "world": "world",
         "x": 0,
