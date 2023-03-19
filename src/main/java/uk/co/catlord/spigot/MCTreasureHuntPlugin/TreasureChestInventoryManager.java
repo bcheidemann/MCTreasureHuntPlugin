@@ -55,7 +55,7 @@ public class TreasureChestInventoryManager implements Listener {
       }
       return inventory;
     }
-    inventory = Bukkit.createInventory(player, 9, "Treasure Chest");
+    inventory = Bukkit.createInventory(player, 27, "Treasure Chest");
     treasureChestInventories.put(player.getUniqueId(), inventory);
     return inventory;
   }
@@ -99,7 +99,7 @@ public class TreasureChestInventoryManager implements Listener {
       Player player = event.getPlayer();
       Inventory inventory = getEmptyTreasureChestInventoryForPlayer(player);
       Inventory templateInventory = getTreasureChestBlockInventory(event.getClickedBlock());
-      for (int i = 0; i < 9; i++) {
+      for (int i = 0; i < 27; i++) {
         ItemStack itemStack = templateInventory.getItem(i);
         if (itemStack != null) {
           inventory.setItem(i, itemStack.clone());
@@ -115,7 +115,7 @@ public class TreasureChestInventoryManager implements Listener {
     if (isTreasureChestInventory(event.getPlayer(), inventory)) {
       HumanEntity player = event.getPlayer();
       ItemStack itemStack;
-      for (int i = 0; i < 9; i++) {
+      for (int i = 0; i < 27; i++) {
         itemStack = inventory.getItem(i);
         if (itemStack != null) {
           PlayerUtils.givePlayerItemStack((Player) player, itemStack);
