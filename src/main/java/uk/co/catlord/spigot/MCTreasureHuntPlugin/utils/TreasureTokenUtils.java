@@ -16,8 +16,33 @@ public class TreasureTokenUtils {
     itemMeta.setDisplayName("Treasure Token");
     itemMeta.setLore(
         List.of(
-            "Each token worth 1 minute when cached in at a checkpoint", TREASURE_TOKEN_LORE_ID));
+            "You receive one point per token you collect, immediately",
+            "upon collecting it, and you can cache in each token at a",
+            "checkpoint to add an extra minute back onto your time.",
+            "",
+            TREASURE_TOKEN_LORE_ID));
     itemStack.setItemMeta(itemMeta);
     return itemStack;
+  }
+
+  public static boolean isTreasureTokenItemStack(ItemStack itemStack) {
+    if (itemStack == null) {
+      return false;
+    }
+    if (itemStack.getType() != Material.AMETHYST_SHARD) {
+      return false;
+    }
+    if (!itemStack.hasItemMeta()) {
+      return false;
+    }
+    ItemMeta itemMeta = itemStack.getItemMeta();
+    if (!itemMeta.hasLore()) {
+      return false;
+    }
+    List<String> lore = itemMeta.getLore();
+    if (lore == null) {
+      return false;
+    }
+    return lore.contains(TREASURE_TOKEN_LORE_ID);
   }
 }

@@ -1,15 +1,3 @@
 {
-  "treasureChests": [
-    {
-      "id": "<uuid>",
-      "displayName": "Treasure Chest",
-      "type": "TREASURE_CHEST",
-      "location": {
-        "world": "world",
-        "x": 0,
-        "y": 0,
-        "z": 0
-      }
-    }
-  ]
+  "treasureChests": []
 }
