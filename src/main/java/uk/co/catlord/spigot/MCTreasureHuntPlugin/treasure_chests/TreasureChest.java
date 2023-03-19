@@ -1,5 +1,6 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests;
 
+import java.util.UUID;
 import org.bukkit.Location;
 import org.json.JSONObject;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorDetail;
@@ -10,49 +11,121 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.parsers.json.JsonParser;
 
 public class TreasureChest {
+  public enum Type {
+    TREASURE_CHEST
+  }
+
+  public UUID uuid;
+  public String displayName;
+  public Type type;
   public Location location;
 
   private TreasureChest() {}
 
   public TreasureChest(Location location) {
+    this.uuid = UUID.randomUUID();
+    this.displayName = "Treasure Chest";
+    this.type = Type.TREASURE_CHEST;
     this.location = location;
   }
 
   public static Result<TreasureChest, ErrorReport<ErrorPathContext>> fromJsonObject(
       ErrorPathContext context, JSONObject value) {
     TreasureChest treasureChest = new TreasureChest();
+    boolean error = false;
     ErrorReportBuilder<ErrorPathContext> errorReportBuilder =
         new ErrorReportBuilder<>(context, "Failed to parse treasure chest");
 
-    if (!value.has("location")) {
-      errorReportBuilder.addDetail(new ErrorReport<>(context, "Missing 'location'"));
-      return Result.error(errorReportBuilder.build());
+    boolean hasUuid = value.has("uuid");
+    boolean hasDisplayName = value.has("displayName");
+    boolean hasType = value.has("type");
+    boolean hasLocation = value.has("location");
+
+    if (!hasUuid) {
+      errorReportBuilder.addDetail(new ErrorDetail("Missing key 'uuid'"));
+      error = true;
     }
 
-    JSONObject locationJson;
-    try {
-      locationJson = value.getJSONObject("location");
-    } catch (Exception e) {
-      errorReportBuilder.addDetail(
-          new ErrorDetail("Failed to parse 'location' as JSON object: " + e.getMessage()));
-      return Result.error(errorReportBuilder.build());
+    if (!hasDisplayName) {
+      errorReportBuilder.addDetail(new ErrorDetail("Missing key 'displayName'"));
+      error = true;
     }
 
-    Result<Location, ErrorReport<ErrorPathContext>> locationParseResult =
-        JsonParser.parseLocationJson(context.extend("location"), locationJson);
-
-    if (locationParseResult.isError()) {
-      errorReportBuilder.addDetail(locationParseResult.getError());
-      return Result.error(errorReportBuilder.build());
+    if (!hasType) {
+      errorReportBuilder.addDetail(new ErrorDetail("Missing key 'type'"));
+      error = true;
     }
 
-    treasureChest.location = locationParseResult.getValue();
+    if (!hasLocation) {
+      errorReportBuilder.addDetail(new ErrorDetail("Missing key 'location'"));
+      error = true;
+    }
+
+    if (hasUuid) {
+      try {
+        treasureChest.uuid = UUID.fromString(value.getString("uuid"));
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail("Failed to parse 'uuid' as UUID string: " + e.getMessage()));
+        error = true;
+      }
+    }
+
+    if (hasDisplayName) {
+      try {
+        treasureChest.displayName = value.getString("displayName");
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail("Failed to parse 'displayName' as string: " + e.getMessage()));
+        error = true;
+      }
+    }
+
+    if (hasType) {
+      try {
+        treasureChest.type = Type.valueOf(value.getString("type"));
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail(
+                "Failed to parse 'type' as treasure chest type (TREASURE_CHEST): "
+                    + e.getMessage()));
+        error = true;
+      }
+    }
+
+    if (hasLocation) {
+      JSONObject locationJson;
+      try {
+        locationJson = value.getJSONObject("location");
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail("Failed to parse 'location' as JSON object: " + e.getMessage()));
+        return Result.error(errorReportBuilder.build());
+      }
+
+      Result<Location, ErrorReport<ErrorPathContext>> locationParseResult =
+          JsonParser.parseLocationJson(context.extend("location"), locationJson);
+
+      if (locationParseResult.isError()) {
+        errorReportBuilder.addDetail(locationParseResult.getError());
+        return Result.error(errorReportBuilder.build());
+      }
+
+      treasureChest.location = locationParseResult.getValue();
+    }
+
+    if (error) {
+      return Result.error(errorReportBuilder.build());
+    }
 
     return Result.ok(treasureChest);
   }
 
   public JSONObject toJsonObject() {
     JSONObject jsonObject = new JSONObject();
+    jsonObject.put("uuid", uuid.toString());
+    jsonObject.put("displayName", displayName);
+    jsonObject.put("type", type.toString());
     jsonObject.put("location", JsonParser.generateLocationJson(location));
     return jsonObject;
   }

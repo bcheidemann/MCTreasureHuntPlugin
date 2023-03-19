@@ -1,0 +1,10 @@
+{
+  "players": [
+    {
+      "uuid": "<uuid>",
+      "treasureChestsOpened": [
+        "<id>"
+      ]
+    }
+  ]
+}
