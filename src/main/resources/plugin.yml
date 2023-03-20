@@ -12,3 +12,6 @@ commands:
   delete-treasure-chest:
     description: Deletes a treasure chest
     usage: "Usage: /delete-treasure-chest <x> <y> <z>"
+  reset-treasure-hunt:
+    description: Resets the treasure hunt
+    usage: "Usage: /reset-treasure-hunt <password>"

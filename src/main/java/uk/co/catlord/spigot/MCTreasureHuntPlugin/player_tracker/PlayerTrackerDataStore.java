@@ -103,6 +103,11 @@ public class PlayerTrackerDataStore extends JsonDataStore {
     return "playerData.json";
   }
 
+  public Result<Boolean, String> reset() {
+    players.clear();
+    return savePlayerTracker();
+  }
+
   public Result<Boolean, String> savePlayerTracker() {
     JSONArray players = new JSONArray();
 
