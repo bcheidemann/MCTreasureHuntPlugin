@@ -18,6 +18,8 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.App;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerData;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerTrackerDataStore;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChest;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChestDataStore;
 
 public class PlayerUtils {
   public static void givePlayerItemStack(HumanEntity player, ItemStack itemStack) {
@@ -136,5 +138,43 @@ public class PlayerUtils {
       }
     }
     return false;
+  }
+
+  public static boolean hasPlayerOpenedTreasureChest(HumanEntity player, Block block) {
+    TreasureChest treasureChest =
+        TreasureChestDataStore.getStore().getTreasureChest(block.getLocation());
+    if (treasureChest == null) {
+      player.sendMessage(
+          ChatColor.RED
+              + "Treasure chest not found. Please report this issue to an administrator.");
+      return false;
+    }
+    Result<PlayerData, String> playerDataResult =
+        PlayerTrackerDataStore.getStore().getPlayerData(player);
+    if (playerDataResult.isError()) {
+      player.sendMessage(ChatColor.RED + playerDataResult.getError());
+      return false;
+    }
+    PlayerData playerData = playerDataResult.getValue();
+    return playerData.hasOpenedTreasureChest(treasureChest.uuid);
+  }
+
+  public static void setPlayerOpenedTreasureChest(HumanEntity player, Block block) {
+    TreasureChest treasureChest =
+        TreasureChestDataStore.getStore().getTreasureChest(block.getLocation());
+    if (treasureChest == null) {
+      player.sendMessage(
+          ChatColor.RED
+              + "Treasure chest not found. Please report this issue to an administrator.");
+      return;
+    }
+    Result<PlayerData, String> playerDataResult =
+        PlayerTrackerDataStore.getStore().getPlayerData(player);
+    if (playerDataResult.isError()) {
+      player.sendMessage(ChatColor.RED + playerDataResult.getError());
+      return;
+    }
+    PlayerData playerData = playerDataResult.getValue();
+    playerData.addOpenedTreasureChest(treasureChest.uuid);
   }
 }
