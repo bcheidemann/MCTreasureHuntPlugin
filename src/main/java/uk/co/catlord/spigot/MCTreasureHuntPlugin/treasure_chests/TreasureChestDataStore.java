@@ -167,4 +167,14 @@ public class TreasureChestDataStore extends JsonDataStore {
 
     return false;
   }
+
+  public TreasureChest getTreasureChest(Location location) {
+    for (TreasureChest existingTreasureChest : this.treasureChests) {
+      if (existingTreasureChest.location.equals(location)) {
+        return existingTreasureChest;
+      }
+    }
+
+    return null;
+  }
 }

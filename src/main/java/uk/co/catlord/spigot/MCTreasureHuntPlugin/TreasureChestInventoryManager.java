@@ -2,6 +2,7 @@ package uk.co.catlord.spigot.MCTreasureHuntPlugin;
 
 import java.util.HashMap;
 import java.util.UUID;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
@@ -97,6 +98,20 @@ public class TreasureChestInventoryManager implements Listener {
     if (event.getAction() == Action.RIGHT_CLICK_BLOCK
         && isBlockTreasureChest(event.getClickedBlock())) {
       event.setCancelled(true);
+      boolean hasPlayerOpenedTreasureChest =
+          PlayerUtils.hasPlayerOpenedTreasureChest(event.getPlayer(), event.getClickedBlock());
+      if (hasPlayerOpenedTreasureChest) {
+        // Show title to player
+        event
+            .getPlayer()
+            .sendTitle(
+                ChatColor.DARK_RED + "Chest Looted",
+                ChatColor.GRAY + "You have already looted this chest",
+                0,
+                40,
+                10);
+        return;
+      }
       Player player = event.getPlayer();
       Inventory inventory = getEmptyTreasureChestInventoryForPlayer(player);
       Inventory templateInventory = getTreasureChestBlockInventory(event.getClickedBlock());
@@ -112,6 +127,7 @@ public class TreasureChestInventoryManager implements Listener {
       }
       player.openInventory(inventory);
       PlayerUtils.givePlayerPoints(player, points);
+      PlayerUtils.setPlayerOpenedTreasureChest(player, event.getClickedBlock());
     }
   }
 
