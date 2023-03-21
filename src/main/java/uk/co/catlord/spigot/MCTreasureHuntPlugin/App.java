@@ -31,6 +31,7 @@ public class App extends JavaPlugin {
     PlayerActionBarDisplayManager.register(this);
 
     // Managers
+    PoiTrailManager.register(this);
     TreasureChestInventoryManager.register(this);
     TreasureChestBlockManager.register(this);
 

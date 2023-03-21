@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.util.Vector;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.App;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerData;
@@ -176,5 +177,13 @@ public class PlayerUtils {
     }
     PlayerData playerData = playerDataResult.getValue();
     playerData.addOpenedTreasureChest(treasureChest.uuid);
+  }
+
+  public static Location getLocationInfrontOfPlayer(HumanEntity player, double distance) {
+    Location playerLocation = player.getLocation();
+    Vector direction = playerLocation.getDirection();
+    direction.setY(0);
+    direction.normalize().multiply(distance);
+    return playerLocation.add(direction);
   }
 }
