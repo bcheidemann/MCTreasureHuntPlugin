@@ -5,6 +5,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.CheckpointDataStore
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.DeleteTreasureChestCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.GiveTreasureTokenCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.ResetTreasureHuntCommand;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetCheckpointCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetTreasureChestCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
@@ -36,10 +37,11 @@ public class App extends JavaPlugin {
     TreasureChestBlockManager.register(this);
 
     // Commands
-    new GiveTreasureTokenCommand().register(this);
-    new SetTreasureChestCommand().register(this);
-    new ResetTreasureHuntCommand().register(this);
     new DeleteTreasureChestCommand().register(this);
+    new GiveTreasureTokenCommand().register(this);
+    new ResetTreasureHuntCommand().register(this);
+    new SetCheckpointCommand().register(this);
+    new SetTreasureChestCommand().register(this);
 
     return true;
   }

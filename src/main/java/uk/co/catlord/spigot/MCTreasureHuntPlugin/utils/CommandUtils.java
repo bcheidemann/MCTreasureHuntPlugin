@@ -8,10 +8,31 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandUtils {
+  @FunctionalInterface
+  public interface ValidateBlockTargetFunction {
+    boolean validate(Location location);
+  }
+
   public static List<String> tabCompleteTargetedBlockCoorinates(
       CommandSender sender, Command command, String label, String[] args, int startAtIndex) {
+    return tabCompleteTargetedBlockCoorinates(
+        sender, command, label, args, startAtIndex, (location) -> true);
+  }
+
+  public static List<String> tabCompleteTargetedBlockCoorinates(
+      CommandSender sender,
+      Command command,
+      String label,
+      String[] args,
+      int startAtIndex,
+      ValidateBlockTargetFunction validateBlockTargetFunction) {
     // Exit early if the sender is not a player
     if (!(sender instanceof Player)) {
+      return List.of();
+    }
+
+    // Exit early if the args length is not correct
+    if (args.length < startAtIndex + 1 || args.length > startAtIndex + 3) {
       return List.of();
     }
 
@@ -23,12 +44,17 @@ public class CommandUtils {
 
     // Exit early if the player is not looking at a block
     if (location == null) {
-      return List.of();
+      return List.of("<x> <y> <z>");
+    }
+
+    // Check the block is not air or null
+    if (location.getBlock() == null || location.getBlock().getType().isAir()) {
+      return List.of("<x> <y> <z>");
     }
 
     // Exit early if the block is not a treasure chest
-    if (!TreasureChestUtils.isBlockTreasureChestLike(location.getBlock())) {
-      return List.of();
+    if (!validateBlockTargetFunction.validate(location)) {
+      return List.of("<x> <y> <z>");
     }
 
     // Tab completion string

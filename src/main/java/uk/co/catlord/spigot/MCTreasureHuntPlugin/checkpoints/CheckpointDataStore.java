@@ -99,4 +99,35 @@ public class CheckpointDataStore extends JsonDataStore {
   protected String getDataFileName() {
     return "checkpoints.json";
   }
+
+  public Result<Boolean, String> addCheckpoint(Checkpoint checkpoint) {
+    checkpoints.add(checkpoint);
+    return saveCheckpoints();
+  }
+
+  private Result<Boolean, String> saveCheckpoints() {
+    JSONArray checkpoints = new JSONArray();
+
+    for (Checkpoint checkpoint : this.checkpoints) {
+      checkpoints.put(checkpoint.toJsonObject());
+    }
+
+    data.put("checkpoints", checkpoints);
+
+    Result<?, ErrorReport<ErrorPathContext>> result = save();
+
+    if (result.isError()) {
+      App.instance
+          .getLogger()
+          .warning(
+              new ErrorReportBuilder<ErrorPathContext>(
+                      new ErrorPathContext(getDataFileName()), "Failed to save treasure chests")
+                  .addDetail(result.getError())
+                  .build()
+                  .pretty());
+      return Result.error("Failed to save treasure chests. Please contact an administrator.");
+    }
+
+    return Result.ok(true);
+  }
 }

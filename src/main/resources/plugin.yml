@@ -15,3 +15,6 @@ commands:
   reset-treasure-hunt:
     description: Resets the treasure hunt
     usage: "Usage: /reset-treasure-hunt <password>"
+  set-checkpoint:
+    description: Set a checkpoint
+    usage: "Usage: /set-checkpoint <x> <y> <z> <name>"
