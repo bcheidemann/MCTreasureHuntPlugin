@@ -2,6 +2,13 @@
 
 ## Setup
 
+### Prerequisites
+
+- Open JDK 18+
+- Apache Maven 3.8.6+
+- screen
+- inotify-tools
+
 ### Java
 
 Install JDK version 18 and ensure that the `JAVA_HOME` environment variable is set to the install directory.
