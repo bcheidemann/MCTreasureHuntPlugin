@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChestDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.CommandUtils;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TreasureChestUtils;
 
 public class DeleteTreasureChestCommand extends RegisterableCommand {
   @Override
@@ -20,7 +21,13 @@ public class DeleteTreasureChestCommand extends RegisterableCommand {
   @Override
   public List<String> onTabComplete(
       CommandSender sender, Command command, String label, String[] args) {
-    return CommandUtils.tabCompleteTargetedBlockCoorinates(sender, command, label, args, 0);
+    return CommandUtils.tabCompleteTargetedBlockCoorinates(
+        sender,
+        command,
+        label,
+        args,
+        0,
+        (location) -> TreasureChestUtils.isBlockTreasureChestLike(location.getBlock()));
   }
 
   @Override

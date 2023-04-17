@@ -6,28 +6,29 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.Checkpoint;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.CheckpointDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
-import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChest;
-import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChestDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.CommandUtils;
-import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TreasureChestUtils;
 
-public class SetTreasureChestCommand extends RegisterableCommand {
+public class SetCheckpointCommand extends RegisterableCommand {
   @Override
   public String getName() {
-    return "set-treasure-chest";
+    return "set-checkpoint";
   }
 
   @Override
   public List<String> onTabComplete(
       CommandSender sender, Command command, String label, String[] args) {
-    return CommandUtils.tabCompleteTargetedBlockCoorinates(
-        sender,
-        command,
-        label,
-        args,
-        0,
-        (location) -> TreasureChestUtils.isBlockTreasureChestLike(location.getBlock()));
+    if (args.length == 4) {
+      return List.of("<name>");
+    }
+
+    if (args.length > 4) {
+      return List.of();
+    }
+
+    return CommandUtils.tabCompleteTargetedBlockCoorinates(sender, command, label, args, 0);
   }
 
   @Override
@@ -40,16 +41,15 @@ public class SetTreasureChestCommand extends RegisterableCommand {
       return true;
     }
 
-    // Create the treasure chest
-    TreasureChest treasureChest = new TreasureChest(options.location);
-    Result<?, String> result = TreasureChestDataStore.getStore().addTreasureChest(treasureChest);
+    // Create the checkpoint
+    Checkpoint checkpoint = new Checkpoint(options.location);
+    Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 
     // Feedback to the player
     if (result.isError()) {
-      options.player.sendMessage(
-          ChatColor.RED + "Failed to set treasure chest: " + result.getError());
+      options.player.sendMessage(ChatColor.RED + "Failed to checkpoint: " + result.getError());
     } else {
-      options.player.sendMessage(ChatColor.GREEN + "Treasure chest set successfully.");
+      options.player.sendMessage(ChatColor.GREEN + "Checkpoint set successfully.");
     }
 
     // Return true
@@ -73,8 +73,8 @@ public class SetTreasureChestCommand extends RegisterableCommand {
     Player player = (Player) sender;
 
     // Check if the command has the correct number of arguments
-    if (args.length != 3) {
-      sender.sendMessage(ChatColor.RED + "USAGE: /" + label + " <x> <y> <z>");
+    if (args.length != 4) {
+      sender.sendMessage(ChatColor.RED + "USAGE: /" + label + " <x> <y> <z> <name>");
       return null;
     }
 
@@ -105,18 +105,16 @@ public class SetTreasureChestCommand extends RegisterableCommand {
       return null;
     }
 
-    // Create the location object
-    Location location = new Location(player.getWorld(), x, y, z);
+    // Check if the name is valid
+    String name = args[3];
 
-    // Ensure the location is a valid block location
-    if (!TreasureChestUtils.isBlockTreasureChestLike(location.getBlock())) {
-      sender.sendMessage(
-          ChatColor.RED
-              + "The location must be a chest or barrel. ("
-              + location.getBlock().getType().toString()
-              + ")");
+    if (name == null || name == "") {
+      sender.sendMessage(ChatColor.RED + "The name must be a valid string.");
       return null;
     }
+
+    // Create the location object
+    Location location = new Location(player.getWorld(), x, y, z);
 
     // Create the command options object
     CommandOptions options = new CommandOptions();
@@ -127,6 +125,9 @@ public class SetTreasureChestCommand extends RegisterableCommand {
     // Set the location
     options.location = location;
 
+    // Set the name
+    options.name = name;
+
     // Return the command options
     return options;
   }
@@ -134,5 +135,6 @@ public class SetTreasureChestCommand extends RegisterableCommand {
   class CommandOptions {
     public Player player;
     public Location location;
+    public String name;
   }
 }

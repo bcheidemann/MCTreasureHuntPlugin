@@ -9,7 +9,8 @@ public class TreasureChestUtils {
     if (block == null) {
       return false;
     }
-    if (block.getType() != Material.CHEST && block.getType() != Material.BARREL) {
+    Material type = block.getType();
+    if (type != Material.CHEST && type != Material.BARREL) {
       return false;
     }
     return true;

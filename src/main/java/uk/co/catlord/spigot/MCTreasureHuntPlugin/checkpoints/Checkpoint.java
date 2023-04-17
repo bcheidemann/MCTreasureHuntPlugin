@@ -12,6 +12,12 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.parsers.json.JsonParser;
 public class Checkpoint {
   public Location location;
 
+  private Checkpoint() {}
+
+  public Checkpoint(Location location) {
+    this.location = location;
+  }
+
   public static Result<Checkpoint, ErrorReport<ErrorPathContext>> fromJsonObject(
       ErrorPathContext context, JSONObject value) {
     Checkpoint checkpoint = new Checkpoint();
@@ -43,5 +49,11 @@ public class Checkpoint {
     checkpoint.location = locationParseResult.getValue();
 
     return Result.ok(checkpoint);
+  }
+
+  public JSONObject toJsonObject() {
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("location", JsonParser.generateLocationJson(location));
+    return jsonObject;
   }
 }
