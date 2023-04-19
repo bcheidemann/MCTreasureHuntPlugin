@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.Checkpoint;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.CheckpointDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.shapes.Sphere;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.CommandUtils;
 
 public class SetCheckpointCommand extends RegisterableCommand {
@@ -57,7 +58,8 @@ public class SetCheckpointCommand extends RegisterableCommand {
     Checkpoint checkpoint = new Checkpoint(
       options.name,
       options.location,
-      options.previousCheckpointName
+      options.previousCheckpointName,
+      new Sphere(options.radius)
     );
     Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 

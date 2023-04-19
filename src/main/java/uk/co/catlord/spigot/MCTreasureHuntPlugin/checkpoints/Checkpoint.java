@@ -8,22 +8,26 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReportBuilder;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.parsers.json.JsonParser;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.shapes.Shape3D;
 
 public class Checkpoint {
   public String name;
   public Location location;
   public String previousCheckpointName;
+  public Shape3D shape;
 
   private Checkpoint() {}
 
   public Checkpoint(
     String name,
     Location location,
-    String previousCheckpointName
+    String previousCheckpointName,
+    Shape3D shape
   ) {
     this.name = name;
     this.location = location;
     this.previousCheckpointName = previousCheckpointName;
+    this.shape = shape;
   }
 
   public static Result<Checkpoint, ErrorReport<ErrorPathContext>> fromJsonObject(
@@ -36,6 +40,7 @@ public class Checkpoint {
     boolean hasLocation = value.has("location");
     boolean hasName = value.has("name");
     boolean hasPreviousCheckpointName = value.has("previousCheckpointName");
+    boolean hasShape = value.has("shape");
 
     if (!hasLocation) {
       errorReportBuilder.addDetail(new ErrorReport<>(context, "Missing 'location'"));
@@ -49,6 +54,11 @@ public class Checkpoint {
 
     if (!hasPreviousCheckpointName) {
       errorReportBuilder.addDetail(new ErrorReport<>(context, "Missing 'previousCheckpointName'"));
+      return Result.error(errorReportBuilder.build());
+    }
+
+    if (!hasShape) {
+      errorReportBuilder.addDetail(new ErrorReport<>(context, "Missing 'shape'"));
       return Result.error(errorReportBuilder.build());
     }
 
@@ -90,6 +100,25 @@ public class Checkpoint {
       }
     }
 
+    if (hasShape) {
+      try {
+        JSONObject shapeJson = value.getJSONObject("shape");
+
+        Result<Shape3D, ErrorReport<ErrorPathContext>> shapeParseResult =
+            Shape3D.fromJsonObject(context.extend("shape"), shapeJson);
+  
+        if (shapeParseResult.isError()) {
+          errorReportBuilder.addDetail(shapeParseResult.getError());
+        }
+  
+        checkpoint.shape = shapeParseResult.getValue();
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail("Failed to parse 'shape' as JSON object: " + e.getMessage()));
+      }
+    }
+
+    // Return the result
     if (errorReportBuilder.hasErrors()) {
       return Result.error(errorReportBuilder.build());
     }
@@ -102,6 +131,7 @@ public class Checkpoint {
     jsonObject.put("location", JsonParser.generateLocationJson(location));
     jsonObject.put("name", name);
     jsonObject.put("previousCheckpointName", previousCheckpointName);
+    jsonObject.put("shape", shape.toJsonObject());
     return jsonObject;
   }
 }
