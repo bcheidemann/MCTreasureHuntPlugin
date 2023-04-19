@@ -34,18 +34,14 @@ public abstract class Shape3D {
           case "SPHERE":
             return Sphere.fromJsonObject(context, value);
           default:
-            errorReportBuilder.addDetail(
-              new ErrorReport<>(
-                context.extend("type"),
-                "Invalid value for 'type': " + type
-              )
-            ).build();
+            errorReportBuilder
+                .addDetail(
+                    new ErrorReport<>(context.extend("type"), "Invalid value for 'type': " + type))
+                .build();
         }
       } catch (Exception e) {
         errorReportBuilder.addDetail(
-            new ErrorReport<>(
-                context.extend("type"),
-                "Failed to parse 'type': " + e.getMessage()));
+            new ErrorReport<>(context.extend("type"), "Failed to parse 'type': " + e.getMessage()));
       }
     }
 

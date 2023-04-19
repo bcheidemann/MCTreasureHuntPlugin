@@ -55,12 +55,12 @@ public class SetCheckpointCommand extends RegisterableCommand {
     }
 
     // Create the checkpoint
-    Checkpoint checkpoint = new Checkpoint(
-      options.name,
-      options.location,
-      options.previousCheckpointName,
-      new Sphere(options.radius)
-    );
+    Checkpoint checkpoint =
+        new Checkpoint(
+            options.name,
+            options.location,
+            options.previousCheckpointName,
+            new Sphere(options.radius));
     Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 
     // Feedback to the player
@@ -92,7 +92,11 @@ public class SetCheckpointCommand extends RegisterableCommand {
 
     // Check if the command has the correct number of arguments
     if (args.length != 6) {
-      sender.sendMessage(ChatColor.RED + "USAGE: /" + label + " <x> <y> <z> <name> <previous-checkpoint> <radius>");
+      sender.sendMessage(
+          ChatColor.RED
+              + "USAGE: /"
+              + label
+              + " <x> <y> <z> <name> <previous-checkpoint> <radius>");
       return null;
     }
 
@@ -146,7 +150,11 @@ public class SetCheckpointCommand extends RegisterableCommand {
 
     if (!previousCheckpointName.equals("START")
         && CheckpointDataStore.getStore().getCheckpointByName(previousCheckpointName) == null) {
-      sender.sendMessage(ChatColor.RED + "The previous checkpoint (" + previousCheckpointName + ") does not exist.");
+      sender.sendMessage(
+          ChatColor.RED
+              + "The previous checkpoint ("
+              + previousCheckpointName
+              + ") does not exist.");
       return null;
     }
 

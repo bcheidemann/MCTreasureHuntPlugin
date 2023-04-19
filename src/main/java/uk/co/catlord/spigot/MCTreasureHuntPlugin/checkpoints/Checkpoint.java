@@ -18,12 +18,7 @@ public class Checkpoint {
 
   private Checkpoint() {}
 
-  public Checkpoint(
-    String name,
-    Location location,
-    String previousCheckpointName,
-    Shape3D shape
-  ) {
+  public Checkpoint(String name, Location location, String previousCheckpointName, Shape3D shape) {
     this.name = name;
     this.location = location;
     this.previousCheckpointName = previousCheckpointName;
@@ -69,11 +64,11 @@ public class Checkpoint {
 
         Result<Location, ErrorReport<ErrorPathContext>> locationParseResult =
             JsonParser.parseLocationJson(context.extend("location"), locationJson);
-  
+
         if (locationParseResult.isError()) {
           errorReportBuilder.addDetail(locationParseResult.getError());
         }
-  
+
         checkpoint.location = locationParseResult.getValue();
       } catch (Exception e) {
         errorReportBuilder.addDetail(
@@ -106,11 +101,11 @@ public class Checkpoint {
 
         Result<Shape3D, ErrorReport<ErrorPathContext>> shapeParseResult =
             Shape3D.fromJsonObject(context.extend("shape"), shapeJson);
-  
+
         if (shapeParseResult.isError()) {
           errorReportBuilder.addDetail(shapeParseResult.getError());
         }
-  
+
         checkpoint.shape = shapeParseResult.getValue();
       } catch (Exception e) {
         errorReportBuilder.addDetail(

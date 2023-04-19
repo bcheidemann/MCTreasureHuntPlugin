@@ -44,18 +44,15 @@ public class Sphere extends Shape3D {
         radius = (float) value.getDouble("radius");
       } catch (JSONException e) {
         errorReportBuilder.addDetail(
-          new ErrorReport<>(
-            context.extend("radius"),
-            "Failed to parse 'radius': " + e.getMessage()
-          )
-        );
+            new ErrorReport<>(
+                context.extend("radius"), "Failed to parse 'radius': " + e.getMessage()));
       }
     }
 
     if (errorReportBuilder.hasErrors()) {
       return Result.error(errorReportBuilder.build());
     }
-        
+
     return Result.ok(new Sphere(radius));
   }
 
