@@ -17,4 +17,4 @@ commands:
     usage: "Usage: /reset-treasure-hunt <password>"
   set-checkpoint:
     description: Set a checkpoint
-    usage: "Usage: /set-checkpoint <x> <y> <z> <name>"
+    usage: "Usage: /set-checkpoint <x> <y> <z> <name> <previous-checkpoint> <radius>"

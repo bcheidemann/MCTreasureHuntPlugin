@@ -21,4 +21,8 @@ public class ErrorReportBuilder<TContext extends Pretty> {
   public ErrorReport<TContext> build() {
     return new ErrorReport<>(context, message, details);
   }
+
+  public boolean hasErrors() {
+    return !details.isEmpty();
+  }
 }
