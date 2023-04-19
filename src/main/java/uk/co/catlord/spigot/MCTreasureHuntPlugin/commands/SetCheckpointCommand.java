@@ -1,5 +1,6 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.Checkpoint;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.CheckpointDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.shapes.Sphere;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.CommandUtils;
 
 public class SetCheckpointCommand extends RegisterableCommand {
@@ -24,7 +26,18 @@ public class SetCheckpointCommand extends RegisterableCommand {
       return List.of("<name>");
     }
 
-    if (args.length > 4) {
+    if (args.length == 5) {
+      List<String> options = new ArrayList<String>(List.of("<previous-checkpoint>", "START"));
+      options.addAll(CheckpointDataStore.getStore().getCheckpointNames());
+
+      return options;
+    }
+
+    if (args.length == 6) {
+      return List.of("<radius>");
+    }
+
+    if (args.length > 6) {
       return List.of();
     }
 
@@ -42,7 +55,12 @@ public class SetCheckpointCommand extends RegisterableCommand {
     }
 
     // Create the checkpoint
-    Checkpoint checkpoint = new Checkpoint(options.location);
+    Checkpoint checkpoint =
+        new Checkpoint(
+            options.name,
+            options.location,
+            options.previousCheckpointName,
+            new Sphere(options.radius));
     Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 
     // Feedback to the player
@@ -73,8 +91,12 @@ public class SetCheckpointCommand extends RegisterableCommand {
     Player player = (Player) sender;
 
     // Check if the command has the correct number of arguments
-    if (args.length != 4) {
-      sender.sendMessage(ChatColor.RED + "USAGE: /" + label + " <x> <y> <z> <name>");
+    if (args.length != 6) {
+      sender.sendMessage(
+          ChatColor.RED
+              + "USAGE: /"
+              + label
+              + " <x> <y> <z> <name> <previous-checkpoint> <radius>");
       return null;
     }
 
@@ -113,6 +135,39 @@ public class SetCheckpointCommand extends RegisterableCommand {
       return null;
     }
 
+    if (CheckpointDataStore.getStore().getCheckpointByName(name) != null) {
+      sender.sendMessage(ChatColor.RED + "A checkpoint with that name already exists.");
+      return null;
+    }
+
+    // Check if the previous checkpoint is valid
+    String previousCheckpointName = args[4];
+
+    if (previousCheckpointName == null || previousCheckpointName == "") {
+      sender.sendMessage(ChatColor.RED + "The previous checkpoint must be a valid string.");
+      return null;
+    }
+
+    if (!previousCheckpointName.equals("START")
+        && CheckpointDataStore.getStore().getCheckpointByName(previousCheckpointName) == null) {
+      sender.sendMessage(
+          ChatColor.RED
+              + "The previous checkpoint ("
+              + previousCheckpointName
+              + ") does not exist.");
+      return null;
+    }
+
+    // Check if the radius is valid
+    float radius;
+
+    try {
+      radius = Float.parseFloat(args[5]);
+    } catch (NumberFormatException e) {
+      sender.sendMessage(ChatColor.RED + "The radius must be a valid number.");
+      return null;
+    }
+
     // Create the location object
     Location location = new Location(player.getWorld(), x, y, z);
 
@@ -128,6 +183,12 @@ public class SetCheckpointCommand extends RegisterableCommand {
     // Set the name
     options.name = name;
 
+    // Set the radius
+    options.radius = radius;
+
+    // Set the previous checkpoint name
+    options.previousCheckpointName = previousCheckpointName;
+
     // Return the command options
     return options;
   }
@@ -136,5 +197,7 @@ public class SetCheckpointCommand extends RegisterableCommand {
     public Player player;
     public Location location;
     public String name;
+    public String previousCheckpointName;
+    public float radius;
   }
 }

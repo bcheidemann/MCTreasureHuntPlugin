@@ -1,6 +1,7 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -129,5 +130,22 @@ public class CheckpointDataStore extends JsonDataStore {
     }
 
     return Result.ok(true);
+  }
+
+  public Checkpoint getCheckpointByName(String name) {
+    for (Checkpoint checkpoint : checkpoints) {
+      if (checkpoint.name.equals(name)) {
+        return checkpoint;
+      }
+    }
+    return null;
+  }
+
+  public List<String> getCheckpointNames() {
+    List<String> names = new ArrayList<>();
+    for (Checkpoint checkpoint : checkpoints) {
+      names.add(checkpoint.name);
+    }
+    return names;
   }
 }
