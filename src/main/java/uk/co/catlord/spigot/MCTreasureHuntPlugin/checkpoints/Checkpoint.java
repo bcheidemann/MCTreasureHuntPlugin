@@ -1,5 +1,6 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints;
 
+import javax.annotation.Nullable;
 import org.bukkit.Location;
 import org.json.JSONObject;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorDetail;
@@ -13,7 +14,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.shapes.Shape3D;
 public class Checkpoint {
   public String name;
   public Location location;
-  public String previousCheckpointName;
+  @Nullable public String previousCheckpointName = null;
   public Shape3D shape;
 
   private Checkpoint() {}
@@ -44,11 +45,6 @@ public class Checkpoint {
 
     if (!hasName) {
       errorReportBuilder.addDetail(new ErrorReport<>(context, "Missing 'name'"));
-      return Result.error(errorReportBuilder.build());
-    }
-
-    if (!hasPreviousCheckpointName) {
-      errorReportBuilder.addDetail(new ErrorReport<>(context, "Missing 'previousCheckpointName'"));
       return Result.error(errorReportBuilder.build());
     }
 

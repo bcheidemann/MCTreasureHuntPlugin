@@ -10,6 +10,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 public abstract class Shape3D {
   public enum Type {
     SPHERE,
+    POINT,
   }
 
   public abstract boolean contains(Location boxLocation, Location pointLocation);
@@ -33,6 +34,8 @@ public abstract class Shape3D {
         switch (type) {
           case "SPHERE":
             return Sphere.fromJsonObject(context, value);
+          case "POINT":
+            return Point.fromJsonObject(context, value);
           default:
             errorReportBuilder
                 .addDetail(
