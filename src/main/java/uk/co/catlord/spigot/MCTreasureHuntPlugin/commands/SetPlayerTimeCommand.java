@@ -2,11 +2,11 @@ package uk.co.catlord.spigot.MCTreasureHuntPlugin.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import net.md_5.bungee.api.ChatColor;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerData;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerTrackerDataStore;
@@ -25,14 +25,16 @@ public class SetPlayerTimeCommand extends RegisterableCommand {
       return true;
     }
 
-    Result<PlayerData, String> playerData = PlayerTrackerDataStore.getStore().getPlayerData(options.player);
+    Result<PlayerData, String> playerData =
+        PlayerTrackerDataStore.getStore().getPlayerData(options.player);
 
     if (playerData.isError()) {
       sender.sendMessage(ChatColor.RED + "Failed to get player data: " + playerData.getError());
       return true;
     }
 
-    Result<Boolean, String> setTimeResult = playerData.getValue().setTimeRemainingSeconds(options.timeSeconds);
+    Result<Boolean, String> setTimeResult =
+        playerData.getValue().setTimeRemainingSeconds(options.timeSeconds);
 
     if (setTimeResult.isError()) {
       sender.sendMessage(ChatColor.RED + "Failed to set time: " + setTimeResult.getError());
@@ -45,8 +47,8 @@ public class SetPlayerTimeCommand extends RegisterableCommand {
   }
 
   @Override
-  public List<String> onTabComplete(CommandSender sender, Command command, String label,
-      String[] args) {
+  public List<String> onTabComplete(
+      CommandSender sender, Command command, String label, String[] args) {
     if (args.length == 1) {
       List<String> playerNames = new ArrayList<>();
 

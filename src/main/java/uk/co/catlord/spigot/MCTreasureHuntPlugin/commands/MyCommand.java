@@ -24,7 +24,8 @@ public class MyCommand extends RegisterableCommand {
       return true;
     }
 
-    Result<PlayerData, String> playerData = PlayerTrackerDataStore.getStore().getPlayerData(options.player);
+    Result<PlayerData, String> playerData =
+        PlayerTrackerDataStore.getStore().getPlayerData(options.player);
 
     if (playerData.isError()) {
       sender.sendMessage(ChatColor.RED + "Failed to get player data: " + playerData.getError());
@@ -33,10 +34,16 @@ public class MyCommand extends RegisterableCommand {
 
     switch (options.statType) {
       case TIME:
-        sender.sendMessage("" + ChatColor.DARK_AQUA + ChatColor.BOLD + "Time (remaining): " + TimeUtils.displaySeconds(playerData.getValue().getTimeRemainingSeconds()));
+        sender.sendMessage(
+            ""
+                + ChatColor.DARK_AQUA
+                + ChatColor.BOLD
+                + "Time (remaining): "
+                + TimeUtils.displaySeconds(playerData.getValue().getTimeRemainingSeconds()));
         break;
       case SCORE:
-        sender.sendMessage("" + ChatColor.GOLD + ChatColor.BOLD + "Score: " + playerData.getValue().getPoints());
+        sender.sendMessage(
+            "" + ChatColor.GOLD + ChatColor.BOLD + "Score: " + playerData.getValue().getPoints());
         break;
     }
 
@@ -44,8 +51,8 @@ public class MyCommand extends RegisterableCommand {
   }
 
   @Override
-  public List<String> onTabComplete(CommandSender sender, Command command, String label,
-      String[] args) {
+  public List<String> onTabComplete(
+      CommandSender sender, Command command, String label, String[] args) {
     if (args.length == 1) {
       return List.of("time", "score");
     }
@@ -53,7 +60,8 @@ public class MyCommand extends RegisterableCommand {
     return List.of();
   }
 
-  public CommandOptions validate(CommandSender sender, Command command, String label, String[] args) {
+  public CommandOptions validate(
+      CommandSender sender, Command command, String label, String[] args) {
     if (!sender.isOp()) {
       sender.sendMessage(ChatColor.RED + "You must be an op to use this command.");
       return null;

@@ -55,7 +55,6 @@ public class PlayerActionBarDisplayManager {
             + ChatColor.BOLD
             + "⌚ "
             + timeRemaining
-            + " ⌚"
-        );
+            + " ⌚");
   }
 }

@@ -81,7 +81,7 @@ public class PlayerData {
     if (!hasTimeRemaining()) {
       return;
     }
-    
+
     Player player = App.instance.getServer().getPlayer(uuid);
 
     // Skip offline players
@@ -114,15 +114,12 @@ public class PlayerData {
       PlayerUtils.playSoundToAllPlayers(Sound.ENTITY_LIGHTNING_BOLT_IMPACT);
 
       // Send a message to all players
-      PlayerUtils.sendTitleToAllPlayers(
-        ChatColor.RED + player.getName(),
-        "ran out of time!"
-      );
+      PlayerUtils.sendTitleToAllPlayers(ChatColor.RED + player.getName(), "ran out of time!");
 
       // Send chat message to all players
-      App.instance.getServer().broadcastMessage(
-        ChatColor.RED + player.getName() + " ran out of time!"
-      );
+      App.instance
+          .getServer()
+          .broadcastMessage(ChatColor.RED + player.getName() + " ran out of time!");
     }
   }
 
@@ -213,7 +210,8 @@ public class PlayerData {
         playerData.timeRemainingSeconds = value.getInt("timeRemainingSeconds");
       } catch (IllegalArgumentException e) {
         errorReportBuilder.addDetail(
-            new ErrorDetail("Failed to parse 'timeRemainingSeconds' as integer: " + e.getMessage()));
+            new ErrorDetail(
+                "Failed to parse 'timeRemainingSeconds' as integer: " + e.getMessage()));
         error = true;
       }
     }

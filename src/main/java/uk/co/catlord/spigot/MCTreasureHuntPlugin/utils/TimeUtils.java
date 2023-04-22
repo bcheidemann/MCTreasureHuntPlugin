@@ -5,7 +5,7 @@ public class TimeUtils {
     int hours = Math.floorDiv(totalSeconds, 3600);
     int minutes = Math.floorDiv(totalSeconds - (hours * 3600), 60);
     int seconds = totalSeconds - (hours * 3600) - (minutes * 60);
-    
+
     if (hours > 0) {
       return String.format("%dhr %02dm", hours, minutes);
     }
