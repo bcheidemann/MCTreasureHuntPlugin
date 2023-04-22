@@ -1,6 +1,5 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.utils;
 
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -15,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.util.Vector;
+import net.md_5.bungee.api.ChatColor;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.App;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerData;
@@ -185,5 +185,25 @@ public class PlayerUtils {
     direction.setY(0);
     direction.normalize().multiply(distance);
     return playerLocation.add(direction);
+  }
+
+  public static void playSoundToAllPlayers(Sound sound, float volume, float pitch) {
+    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+        player.playSound(player.getLocation(), sound, volume, pitch);
+    }
+  }
+
+  public static void playSoundToAllPlayers(Sound sound) {
+    playSoundToAllPlayers(sound, 1.0f, 1.0f);
+  }
+
+  public static void sendTitleToAllPlayers(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+        player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+    }
+  }
+
+  public static void sendTitleToAllPlayers(String title, String subtitle) {
+    sendTitleToAllPlayers(title, subtitle, 10, 70, 20);
   }
 }
