@@ -21,6 +21,9 @@ commands:
   set-start:
     description: Set the start
     usage: "Usage: /set-start <x> <y> <z>"
+  set-finish:
+    description: Set the finish
+    usage: "Usage: /set-finish <x> <y> <z> <previous-checkpoint>"
   set-player-time:
     description: Set the time for a player
     usage: "Usage: /set-player-time <player> <hours> <minutes> <seconds>"

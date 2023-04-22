@@ -7,8 +7,8 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.DeleteTreasureChestCom
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.GiveTreasureTokenCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.MyCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.ResetTreasureHuntCommand;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetFinishCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetPlayerTimeCommand;
-import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetStartCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetTreasureChestCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
@@ -45,9 +45,9 @@ public class App extends JavaPlugin {
     new GiveTreasureTokenCommand().register(this);
     new MyCommand().register(this);
     new ResetTreasureHuntCommand().register(this);
-    new SetStartCommand().register(this);
+    new SetFinishCommand().register(this);
     new SetPlayerTimeCommand().register(this);
-    new SetStartCommand().register(this);
+    new SetFinishCommand().register(this);
     new SetTreasureChestCommand().register(this);
 
     return true;
