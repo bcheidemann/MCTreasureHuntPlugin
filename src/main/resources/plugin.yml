@@ -24,3 +24,6 @@ commands:
   my:
     description: Get your stats
     usage: "Usage: /my <stat>"
+  compass:
+    description: Get a treasure compass
+    usage: "Usage: /compass"
