@@ -13,7 +13,9 @@ public abstract class Shape3D {
     POINT,
   }
 
-  public abstract boolean contains(Location boxLocation, Location pointLocation);
+  public abstract boolean contains(Location pointLocation);
+
+  public abstract Location getCenter();
 
   public static Result<Shape3D, ErrorReport<ErrorPathContext>> fromJsonObject(
       ErrorPathContext context, JSONObject value) {

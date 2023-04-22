@@ -1,27 +1,23 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints;
 
 import javax.annotation.Nullable;
-import org.bukkit.Location;
 import org.json.JSONObject;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorDetail;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReportBuilder;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
-import uk.co.catlord.spigot.MCTreasureHuntPlugin.parsers.json.JsonParser;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.shapes.Shape3D;
 
 public class Checkpoint {
   public String name;
-  public Location location;
   @Nullable public String previousCheckpointName = null;
   public Shape3D shape;
 
   private Checkpoint() {}
 
-  public Checkpoint(String name, Location location, String previousCheckpointName, Shape3D shape) {
+  public Checkpoint(String name, String previousCheckpointName, Shape3D shape) {
     this.name = name;
-    this.location = location;
     this.previousCheckpointName = previousCheckpointName;
     this.shape = shape;
   }
@@ -33,15 +29,9 @@ public class Checkpoint {
         new ErrorReportBuilder<>(context, "Failed to parse checkpoint");
 
     // Validate that the JSON object has the required fields
-    boolean hasLocation = value.has("location");
     boolean hasName = value.has("name");
     boolean hasPreviousCheckpointName = value.has("previousCheckpointName");
     boolean hasShape = value.has("shape");
-
-    if (!hasLocation) {
-      errorReportBuilder.addDetail(new ErrorReport<>(context, "Missing 'location'"));
-      return Result.error(errorReportBuilder.build());
-    }
 
     if (!hasName) {
       errorReportBuilder.addDetail(new ErrorReport<>(context, "Missing 'name'"));
@@ -51,25 +41,6 @@ public class Checkpoint {
     if (!hasShape) {
       errorReportBuilder.addDetail(new ErrorReport<>(context, "Missing 'shape'"));
       return Result.error(errorReportBuilder.build());
-    }
-
-    // Parse the JSON object
-    if (hasLocation) {
-      try {
-        JSONObject locationJson = value.getJSONObject("location");
-
-        Result<Location, ErrorReport<ErrorPathContext>> locationParseResult =
-            JsonParser.parseLocationJson(context.extend("location"), locationJson);
-
-        if (locationParseResult.isError()) {
-          errorReportBuilder.addDetail(locationParseResult.getError());
-        }
-
-        checkpoint.location = locationParseResult.getValue();
-      } catch (Exception e) {
-        errorReportBuilder.addDetail(
-            new ErrorDetail("Failed to parse 'location' as JSON object: " + e.getMessage()));
-      }
     }
 
     if (hasName) {
@@ -119,7 +90,6 @@ public class Checkpoint {
 
   public JSONObject toJsonObject() {
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("location", JsonParser.generateLocationJson(location));
     jsonObject.put("name", name);
     jsonObject.put("previousCheckpointName", previousCheckpointName);
     jsonObject.put("shape", shape.toJsonObject());
