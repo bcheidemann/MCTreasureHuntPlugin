@@ -21,3 +21,6 @@ commands:
   set-player-time:
     description: Set the time for a player
     usage: "Usage: /set-player-time <player> <hours> <minutes> <seconds>"
+  my:
+    description: Get your stats
+    usage: "Usage: /my <stat>"

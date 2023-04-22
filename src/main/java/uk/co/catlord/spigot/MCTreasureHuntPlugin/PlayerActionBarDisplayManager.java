@@ -51,7 +51,7 @@ public class PlayerActionBarDisplayManager {
             + points
             + " ★"
             + " ".repeat(spacing)
-            + ChatColor.DARK_PURPLE
+            + ChatColor.DARK_AQUA
             + ChatColor.BOLD
             + "⌚ "
             + timeRemaining

@@ -79,6 +79,11 @@ public class SetPlayerTimeCommand extends RegisterableCommand {
   }
 
   private CommandOptions validate(CommandSender sender, Command cmd, String label, String[] args) {
+    if (!sender.isOp()) {
+      sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+      return null;
+    }
+
     if (args.length < 2 || args.length > 4) {
       sender.sendMessage("Usage: /set-player-time <player> <hours> <minutes> <seconds>");
       return null;
