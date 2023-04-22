@@ -1,6 +1,7 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.utils;
 
 import java.util.List;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -16,9 +17,11 @@ public class TreasureTokenUtils {
     itemMeta.setDisplayName("Treasure Token");
     itemMeta.setLore(
         List.of(
-            "You receive one point per token you collect, immediately",
-            "upon collecting it, and you can cache in each token at a",
-            "checkpoint to add an extra minute back onto your time.",
+            "",
+            "" + ChatColor.GOLD + ChatColor.BOLD + "Treasure Token",
+            ChatColor.GRAY + "You receive one point per token you collect, immediately",
+            ChatColor.GRAY + "upon collecting it, and you can cache in each token at a",
+            ChatColor.GRAY + "checkpoint to add an extra minute back onto your time.",
             "",
             TREASURE_TOKEN_LORE_ID));
     itemStack.setItemMeta(itemMeta);
