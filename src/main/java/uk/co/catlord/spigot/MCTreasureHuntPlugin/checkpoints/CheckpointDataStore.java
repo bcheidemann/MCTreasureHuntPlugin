@@ -102,6 +102,12 @@ public class CheckpointDataStore extends JsonDataStore {
   }
 
   public Result<Boolean, String> addCheckpoint(Checkpoint checkpoint) {
+    for (Checkpoint existingCheckpoint : checkpoints) {
+      if (existingCheckpoint.name.equals(checkpoint.name)) {
+        return Result.error("Checkpoint with name '" + checkpoint.name + "' already exists.");
+      }
+    }
+
     checkpoints.add(checkpoint);
     return saveCheckpoints();
   }
