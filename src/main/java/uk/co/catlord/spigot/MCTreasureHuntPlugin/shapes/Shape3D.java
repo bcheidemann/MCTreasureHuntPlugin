@@ -9,6 +9,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 
 public abstract class Shape3D {
   public enum Type {
+    BOX,
     SPHERE,
     POINT,
   }
@@ -34,6 +35,8 @@ public abstract class Shape3D {
       try {
         String type = value.getString("type");
         switch (type) {
+          case "BOX":
+            return Box.fromJsonObject(context, value);
           case "SPHERE":
             return Sphere.fromJsonObject(context, value);
           case "POINT":
