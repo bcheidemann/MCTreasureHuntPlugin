@@ -44,7 +44,7 @@ public class SetFinishCommand extends RegisterableCommand {
 
     // Create the checkpoint
     Checkpoint checkpoint =
-        new Checkpoint("FINISH", options.location, options.previousCheckpointName, new Point());
+        new Checkpoint("FINISH", options.previousCheckpointName, new Point(options.location));
     Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 
     // Feedback to the player

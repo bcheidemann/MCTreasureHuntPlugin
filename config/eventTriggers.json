@@ -1,0 +1,24 @@
+{
+  "eventTriggers": [
+    {
+      "uuid": "<uuid>",
+      "type": "COLLISION",
+      "event": "START",
+      "shape": {
+        "type": "BOX",
+        "corner1": {
+          "world": "world",
+          "x": -5,
+          "y": 75,
+          "z": -5
+        },
+        "corner2": {
+          "world": "world",
+          "x": 5,
+          "y": 85,
+          "z": 5
+        }
+      }
+    }
+  ]
+}

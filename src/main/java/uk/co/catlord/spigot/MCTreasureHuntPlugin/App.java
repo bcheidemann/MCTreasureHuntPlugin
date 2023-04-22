@@ -7,12 +7,15 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.DeleteTreasureChestCom
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.GiveTreasureTokenCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.MyCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.ResetTreasureHuntCommand;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetCheckpointCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetFinishCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetPlayerTimeCommand;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetStartCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetTreasureChestCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.eventTriggers.EventTriggersDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerTrackerDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChestDataStore;
 
@@ -45,9 +48,10 @@ public class App extends JavaPlugin {
     new GiveTreasureTokenCommand().register(this);
     new MyCommand().register(this);
     new ResetTreasureHuntCommand().register(this);
+    new SetCheckpointCommand().register(this);
     new SetFinishCommand().register(this);
     new SetPlayerTimeCommand().register(this);
-    new SetFinishCommand().register(this);
+    new SetStartCommand().register(this);
     new SetTreasureChestCommand().register(this);
 
     return true;
@@ -58,6 +62,14 @@ public class App extends JavaPlugin {
 
     {
       Result<Boolean, ErrorReport<ErrorPathContext>> result = CheckpointDataStore.initialize();
+      if (result.isError()) {
+        getLogger().warning(result.getError().pretty());
+        error = true;
+      }
+    }
+
+    {
+      Result<Boolean, ErrorReport<ErrorPathContext>> result = EventTriggersDataStore.initialize();
       if (result.isError()) {
         getLogger().warning(result.getError().pretty());
         error = true;
