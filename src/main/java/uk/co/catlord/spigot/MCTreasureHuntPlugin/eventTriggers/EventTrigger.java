@@ -29,6 +29,8 @@ public abstract class EventTrigger {
 
   public abstract JSONObject toJsonObject();
 
+  public abstract void register();
+
   public static Result<EventTrigger, ErrorReport<ErrorPathContext>> fromJsonObject(
       ErrorPathContext context, JSONObject value) {
     ErrorReportBuilder<ErrorPathContext> errorReportBuilder =

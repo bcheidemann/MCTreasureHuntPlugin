@@ -93,6 +93,10 @@ public class EventTriggersDataStore extends JsonDataStore {
               "Failed to load event triggers: " + e.getMessage()));
     }
 
+    for (EventTrigger eventTrigger : eventTriggers) {
+      eventTrigger.register();
+    }
+
     return Result.ok(true);
   }
 

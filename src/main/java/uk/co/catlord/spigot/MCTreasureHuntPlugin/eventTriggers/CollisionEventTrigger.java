@@ -1,14 +1,18 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.eventTriggers;
 
 import java.util.UUID;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.json.JSONObject;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.App;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReportBuilder;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.shapes.Shape3D;
 
-public class CollisionEventTrigger extends EventTrigger {
+public class CollisionEventTrigger extends EventTrigger implements Listener {
   private Shape3D shape;
 
   public CollisionEventTrigger(UUID uuid, EventTriggerType type, EventType event, Shape3D shape) {
@@ -52,5 +56,23 @@ public class CollisionEventTrigger extends EventTrigger {
         .put("type", type.toString())
         .put("event", event.toString())
         .put("shape", shape.toJsonObject());
+  }
+
+  public void register() {
+    App.instance.getServer().getPluginManager().registerEvents(this, App.instance);
+  }
+
+  @EventHandler
+  public void onPlayerMove(PlayerMoveEvent event) {
+    if (!shape.contains(event.getTo())) {
+      return;
+    }
+
+    if (shape.contains(event.getFrom())) {
+      return;
+    }
+
+    // TODO: Fire event
+    event.getPlayer().sendMessage("You triggered the event: " + this.event.name());
   }
 }
