@@ -186,4 +186,25 @@ public class PlayerUtils {
     direction.normalize().multiply(distance);
     return playerLocation.add(direction);
   }
+
+  public static void playSoundToAllPlayers(Sound sound, float volume, float pitch) {
+    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+      player.playSound(player.getLocation(), sound, volume, pitch);
+    }
+  }
+
+  public static void playSoundToAllPlayers(Sound sound) {
+    playSoundToAllPlayers(sound, 1.0f, 1.0f);
+  }
+
+  public static void sendTitleToAllPlayers(
+      String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+      player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+    }
+  }
+
+  public static void sendTitleToAllPlayers(String title, String subtitle) {
+    sendTitleToAllPlayers(title, subtitle, 10, 70, 20);
+  }
 }

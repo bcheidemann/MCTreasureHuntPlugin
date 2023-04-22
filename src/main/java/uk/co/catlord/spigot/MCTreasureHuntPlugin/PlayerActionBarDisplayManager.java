@@ -7,6 +7,7 @@ import org.bukkit.plugin.Plugin;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerData;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerTrackerDataStore;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TimeUtils;
 
 public class PlayerActionBarDisplayManager {
   private static Plugin instance;
@@ -39,15 +40,21 @@ public class PlayerActionBarDisplayManager {
     PlayerData playerData = playerDataResult.getValue();
 
     String points = String.valueOf(playerData.getPoints());
+    String timeRemaining = TimeUtils.displaySeconds(playerData.getTimeRemainingSeconds());
+    int spacing = Math.max(60 - points.length() - timeRemaining.length(), 0);
     ActionBarManager.sendActionBar(
         player,
-        ChatColor.GOLD
-            + "★ "
-            + ChatColor.BOLD
-            + points
-            + ChatColor.RESET
-            + ""
+        ""
             + ChatColor.GOLD
-            + " ★");
+            + ChatColor.BOLD
+            + "★ "
+            + points
+            + " ★"
+            + " ".repeat(spacing)
+            + ChatColor.DARK_AQUA
+            + ChatColor.BOLD
+            + "⌚ "
+            + timeRemaining
+            + " ⌚");
   }
 }

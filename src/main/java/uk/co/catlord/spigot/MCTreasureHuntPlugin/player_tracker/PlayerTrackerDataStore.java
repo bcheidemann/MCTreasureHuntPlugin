@@ -29,7 +29,31 @@ public class PlayerTrackerDataStore extends JsonDataStore {
 
     instance = new PlayerTrackerDataStore();
 
-    return instance.load();
+    Result<Boolean, ErrorReport<ErrorPathContext>> loadResult = instance.load();
+
+    if (loadResult.isError()) {
+      return loadResult;
+    }
+
+    Bukkit.getScheduler()
+        .runTaskTimer(
+            App.instance,
+            () -> {
+              for (PlayerData playerData : instance.players.values()) {
+                playerData.tickSecondWithoutSave();
+              }
+              Result<Boolean, String> saveResult =
+                  PlayerTrackerDataStore.getStore().savePlayerTracker();
+              if (saveResult.isError()) {
+                App.instance
+                    .getLogger()
+                    .warning("ERROR: Error saving player tracker data: " + saveResult.getError());
+              }
+            },
+            20,
+            20);
+
+    return Result.ok(true);
   }
 
   public static PlayerTrackerDataStore getStore() {

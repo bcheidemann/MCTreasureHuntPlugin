@@ -4,8 +4,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.CheckpointDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.DeleteTreasureChestCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.GiveTreasureTokenCommand;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.MyCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.ResetTreasureHuntCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetCheckpointCommand;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetPlayerTimeCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetTreasureChestCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
@@ -39,8 +41,10 @@ public class App extends JavaPlugin {
     // Commands
     new DeleteTreasureChestCommand().register(this);
     new GiveTreasureTokenCommand().register(this);
+    new MyCommand().register(this);
     new ResetTreasureHuntCommand().register(this);
     new SetCheckpointCommand().register(this);
+    new SetPlayerTimeCommand().register(this);
     new SetTreasureChestCommand().register(this);
 
     return true;
