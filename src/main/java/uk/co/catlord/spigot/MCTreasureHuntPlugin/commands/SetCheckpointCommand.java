@@ -59,7 +59,9 @@ public class SetCheckpointCommand extends RegisterableCommand {
         new Checkpoint(
             options.name,
             options.previousCheckpointName,
-            new Sphere(options.location, options.radius));
+            new Sphere(options.location, options.radius),
+            Checkpoint.Type.CHECKPOINT,
+            null);
     Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 
     // Feedback to the player

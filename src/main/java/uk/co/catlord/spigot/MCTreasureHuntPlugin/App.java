@@ -11,6 +11,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetCheckpointCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetFinishCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetPlayerTimeCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetStartCommand;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetTreasureBeacon;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetTreasureChestCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
@@ -52,6 +53,7 @@ public class App extends JavaPlugin {
     new SetFinishCommand().register(this);
     new SetPlayerTimeCommand().register(this);
     new SetStartCommand().register(this);
+    new SetTreasureBeacon().register(this);
     new SetTreasureChestCommand().register(this);
 
     return true;

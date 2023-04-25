@@ -33,3 +33,6 @@ commands:
   compass:
     description: Get a treasure compass
     usage: "Usage: /compass"
+  set-treasure-beacon:
+    description: Set a treasure beacon
+    usage: "Usage: /set-treasure-beacon <x> <y> <z> <name> <trail-from> <radius>"
