@@ -19,6 +19,12 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.PlayerUtils;
 
 public class PlayerData {
+  public enum RaceStatus {
+    NOT_STARTED,
+    STARTED,
+    FINISHED,
+  }
+
   private PlayerTrackerDataStore store;
   public UUID uuid;
   private int points;
@@ -26,6 +32,7 @@ public class PlayerData {
   private int timeRemainingSeconds = 60 * 60 * 3; // 3 hours
   private Set<String> visitedCheckpoints = new HashSet<>();
   private String currentCheckpointName = "START";
+  private RaceStatus raceStatus = RaceStatus.NOT_STARTED;
 
   private PlayerData() {}
 
@@ -137,6 +144,7 @@ public class PlayerData {
     boolean hasTimeRemainingSeconds = value.has("timeRemainingSeconds");
     boolean hasVisitedCheckpoints = value.has("visitedCheckpoints");
     boolean hasCurrentCheckpointName = value.has("currentCheckpointName");
+    boolean hasRaceStatus = value.has("raceStatus");
 
     if (!hasUuid) {
       errorReportBuilder.addDetail(new ErrorDetail("Missing key 'uuid'"));
@@ -160,6 +168,10 @@ public class PlayerData {
 
     if (!hasCurrentCheckpointName) {
       errorReportBuilder.addDetail(new ErrorDetail("Missing key 'currentCheckpointName'"));
+    }
+
+    if (!hasRaceStatus) {
+      errorReportBuilder.addDetail(new ErrorDetail("Missing key 'raceStatus'"));
     }
 
     if (hasUuid) {
@@ -241,6 +253,15 @@ public class PlayerData {
       }
     }
 
+    if (hasRaceStatus) {
+      try {
+        playerData.raceStatus = RaceStatus.valueOf(value.getString("raceStatus"));
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail("Failed to parse 'raceStatus' as RaceStatus: " + e.getMessage()));
+      }
+    }
+
     if (errorReportBuilder.hasErrors()) {
       return Result.error(errorReportBuilder.build());
     }
@@ -256,6 +277,7 @@ public class PlayerData {
     jsonObject.put("timeRemainingSeconds", timeRemainingSeconds);
     jsonObject.put("visitedCheckpoints", visitedCheckpoints);
     jsonObject.put("currentCheckpointName", currentCheckpointName);
+    jsonObject.put("raceStatus", raceStatus.name());
     return jsonObject;
   }
 }
