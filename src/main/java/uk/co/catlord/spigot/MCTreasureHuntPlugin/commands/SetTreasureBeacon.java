@@ -10,23 +10,35 @@ import org.bukkit.entity.Player;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.Checkpoint;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.CheckpointDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
-import uk.co.catlord.spigot.MCTreasureHuntPlugin.shapes.Point;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.shapes.Sphere;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.CommandUtils;
 
-public class SetFinishCommand extends RegisterableCommand {
+public class SetTreasureBeacon extends RegisterableCommand {
   @Override
   public String getName() {
-    return "set-finish";
+    return "set-treasure-beacon";
   }
 
   @Override
   public List<String> onTabComplete(
       CommandSender sender, Command command, String label, String[] args) {
     if (args.length == 4) {
-      List<String> options = new ArrayList<String>(List.of("<previous-checkpoint>"));
+      return List.of("<name>");
+    }
+
+    if (args.length == 5) {
+      List<String> options = new ArrayList<String>(List.of("<trail-from>", "START"));
       options.addAll(CheckpointDataStore.getStore().getCheckpointNames());
 
       return options;
+    }
+
+    if (args.length == 6) {
+      return List.of("<radius>");
+    }
+
+    if (args.length > 6) {
+      return List.of();
     }
 
     return CommandUtils.tabCompleteTargetedBlockCoorinates(sender, command, label, args, 0);
@@ -45,18 +57,19 @@ public class SetFinishCommand extends RegisterableCommand {
     // Create the checkpoint
     Checkpoint checkpoint =
         new Checkpoint(
-            "FINISH",
-            options.previousCheckpointName,
-            new Point(options.location),
-            Checkpoint.Type.CHECKPOINT,
-            null);
+            options.name,
+            null,
+            new Sphere(options.location, options.radius),
+            Checkpoint.Type.TREASURE_BEACON,
+            options.trailFrom);
     Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 
     // Feedback to the player
     if (result.isError()) {
-      sender.sendMessage(ChatColor.RED + "Failed to set finish checkpoint: " + result.getError());
+      options.player.sendMessage(
+          ChatColor.RED + "Failed to set treasure beacon checkpoint: " + result.getError());
     } else {
-      sender.sendMessage(ChatColor.GREEN + "Finish checkpoint set successfully.");
+      options.player.sendMessage(ChatColor.GREEN + "Treasure beacon checkpoint set successfully.");
     }
 
     // Return true
@@ -80,8 +93,9 @@ public class SetFinishCommand extends RegisterableCommand {
     Player player = (Player) sender;
 
     // Check if the command has the correct number of arguments
-    if (args.length != 4) {
-      sender.sendMessage(ChatColor.RED + "Usage: /" + label + " <x> <y> <z> <previous-checkpoint>");
+    if (args.length != 6) {
+      sender.sendMessage(
+          ChatColor.RED + "USAGE: /" + label + " <x> <y> <z> <name> <trail-from> <radius>");
       return null;
     }
 
@@ -112,41 +126,80 @@ public class SetFinishCommand extends RegisterableCommand {
       return null;
     }
 
-    // Create the location object
-    Location location = new Location(player.getWorld(), x, y, z);
+    // Check if the name is valid
+    String name = args[3];
+
+    if (name == null || name == "") {
+      sender.sendMessage(ChatColor.RED + "The name must be a valid string.");
+      return null;
+    }
+
+    if (CheckpointDataStore.getStore().getCheckpointByName(name) != null) {
+      sender.sendMessage(ChatColor.RED + "A checkpoint with that name already exists.");
+      return null;
+    }
 
     // Check if the previous checkpoint is valid
-    String previousCheckpointName = args[3];
+    String trailFrom = args[4];
 
-    if (previousCheckpointName == null || previousCheckpointName == "") {
+    if (trailFrom == null || trailFrom == "") {
       sender.sendMessage(ChatColor.RED + "The previous checkpoint must be a valid string.");
       return null;
     }
 
-    if (CheckpointDataStore.getStore().getCheckpointByName(previousCheckpointName) == null) {
+    if (!trailFrom.equals("START")
+        && CheckpointDataStore.getStore().getCheckpointByName(trailFrom) == null) {
       sender.sendMessage(
-          ChatColor.RED
-              + "The previous checkpoint ("
-              + previousCheckpointName
-              + ") does not exist.");
+          ChatColor.RED + "The previous checkpoint (" + trailFrom + ") does not exist.");
       return null;
     }
+
+    if (trailFrom.equals("FINISH")) {
+      sender.sendMessage(
+          ChatColor.RED + "Cannot have a treasure trail from the finish checkpoint.");
+      return null;
+    }
+
+    // Check if the radius is valid
+    float radius;
+
+    try {
+      radius = Float.parseFloat(args[5]);
+    } catch (NumberFormatException e) {
+      sender.sendMessage(ChatColor.RED + "The radius must be a valid number.");
+      return null;
+    }
+
+    // Create the location object
+    Location location = new Location(player.getWorld(), x, y, z);
 
     // Create the command options object
     CommandOptions options = new CommandOptions();
 
+    // Set the player
+    options.player = player;
+
     // Set the location
     options.location = location;
 
+    // Set the name
+    options.name = name;
+
+    // Set the radius
+    options.radius = radius;
+
     // Set the previous checkpoint name
-    options.previousCheckpointName = previousCheckpointName;
+    options.trailFrom = trailFrom;
 
     // Return the command options
     return options;
   }
 
   class CommandOptions {
+    public Player player;
     public Location location;
-    public String previousCheckpointName;
+    public String name;
+    public String trailFrom;
+    public float radius;
   }
 }

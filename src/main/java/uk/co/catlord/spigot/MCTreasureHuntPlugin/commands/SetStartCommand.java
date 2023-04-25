@@ -35,7 +35,9 @@ public class SetStartCommand extends RegisterableCommand {
     }
 
     // Create the checkpoint
-    Checkpoint checkpoint = new Checkpoint("START", null, new Point(options.location));
+    Checkpoint checkpoint =
+        new Checkpoint(
+            "START", null, new Point(options.location), Checkpoint.Type.CHECKPOINT, null);
     Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 
     // Feedback to the player
