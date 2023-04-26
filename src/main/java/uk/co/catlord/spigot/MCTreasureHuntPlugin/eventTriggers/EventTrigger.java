@@ -1,11 +1,19 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.eventTriggers;
 
 import java.util.UUID;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.json.JSONObject;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReportBuilder;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerData;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerData.RaceStatus;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerTrackerDataStore;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.BroadcastUtils;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.PlayerUtils;
 
 public abstract class EventTrigger {
   public enum EventTriggerType {
@@ -92,5 +100,65 @@ public abstract class EventTrigger {
       default:
         return Result.error(new ErrorReport<>(context, "Unknown event trigger type"));
     }
+  }
+
+  protected void handleEvent(Player player) {
+    switch (event) {
+      case START:
+        handleStartEvent(player);
+        break;
+      case FINISH:
+        handleFinishEvent(player);
+        break;
+    }
+  }
+
+  protected void handleStartEvent(Player player) {
+    PlayerData playerData = getPlayerData(player);
+    if (playerData == null) {
+      return;
+    }
+    RaceStatus status = playerData.getRaceStatus();
+    if (status != RaceStatus.NOT_STARTED) {
+      return;
+    }
+    Result<?, String> setRaceStatusResult = playerData.setRaceStatus(RaceStatus.STARTED);
+    if (setRaceStatusResult.isError()) {
+      player.sendMessage(setRaceStatusResult.getError());
+      return;
+    }
+    PlayerUtils.sendTitleToPlayer(player, ChatColor.GREEN + "Go!", "Your time has started");
+    player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BELL_USE, 1, 1);
+    BroadcastUtils.broadcastRaceEvent(player.getDisplayName() + " has started!");
+  }
+
+  protected void handleFinishEvent(Player player) {
+    PlayerData playerData = getPlayerData(player);
+    if (playerData == null) {
+      return;
+    }
+    RaceStatus status = playerData.getRaceStatus();
+    if (status != RaceStatus.STARTED) {
+      return;
+    }
+    Result<?, String> setRaceStatusResult = playerData.setRaceStatus(RaceStatus.FINISHED);
+    if (setRaceStatusResult.isError()) {
+      player.sendMessage(setRaceStatusResult.getError());
+      return;
+    }
+    PlayerUtils.sendTitleToPlayer(player, ChatColor.GOLD + "Finished!", "You completed the hunt");
+    player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BELL_USE, 1, 1);
+    BroadcastUtils.broadcastRaceEvent(player.getDisplayName() + " has completed the hunt!");
+    // TODO: Finish stuff
+  }
+
+  private PlayerData getPlayerData(Player player) {
+    Result<PlayerData, String> playerData = PlayerTrackerDataStore.getStore().getPlayerData(player);
+    if (playerData.isError()) {
+      player.sendMessage(playerData.getError());
+      return null;
+    }
+
+    return playerData.getValue();
   }
 }

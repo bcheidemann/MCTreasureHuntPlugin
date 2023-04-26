@@ -72,7 +72,6 @@ public class CollisionEventTrigger extends EventTrigger implements Listener {
       return;
     }
 
-    // TODO: Fire event
-    event.getPlayer().sendMessage("You triggered the event: " + this.event.name());
+    handleEvent(event.getPlayer());
   }
 }

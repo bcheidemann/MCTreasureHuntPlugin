@@ -61,6 +61,15 @@ public class PlayerData {
     return points;
   }
 
+  public Result<Boolean, String> setRaceStatus(RaceStatus raceStatus) {
+    this.raceStatus = raceStatus;
+    return save();
+  }
+
+  public RaceStatus getRaceStatus() {
+    return raceStatus;
+  }
+
   public Result<Boolean, String> addOpenedTreasureChest(UUID treasureChestUuid) {
     openedTreasureChests.add(treasureChestUuid);
     return save();
@@ -84,7 +93,9 @@ public class PlayerData {
   }
 
   public void tickSecondWithoutSave() {
-    // TODO: Skip players who haven't started the treasure hunt yet
+    if (raceStatus != RaceStatus.STARTED) {
+      return;
+    }
 
     // Skip players who have run out of time
     if (!hasTimeRemaining()) {
