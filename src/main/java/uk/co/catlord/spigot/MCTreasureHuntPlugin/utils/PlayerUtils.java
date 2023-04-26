@@ -197,6 +197,15 @@ public class PlayerUtils {
     playSoundToAllPlayers(sound, 1.0f, 1.0f);
   }
 
+  public static void sendTitleToPlayer(
+      Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+    player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+  }
+
+  public static void sendTitleToPlayer(Player player, String title, String subtitle) {
+    sendTitleToPlayer(player, title, subtitle, 10, 70, 20);
+  }
+
   public static void sendTitleToAllPlayers(
       String title, String subtitle, int fadeIn, int stay, int fadeOut) {
     for (Player player : Bukkit.getServer().getOnlinePlayers()) {

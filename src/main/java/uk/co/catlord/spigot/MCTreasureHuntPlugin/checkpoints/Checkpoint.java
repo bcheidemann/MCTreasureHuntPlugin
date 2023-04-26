@@ -1,15 +1,23 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints;
 
 import javax.annotation.Nullable;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.json.JSONObject;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.App;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorDetail;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReportBuilder;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerData;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerTrackerDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.shapes.Shape3D;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.PlayerUtils;
 
-public class Checkpoint {
+public class Checkpoint implements Listener {
   public enum Type {
     CHECKPOINT,
     TREASURE_BEACON,
@@ -21,7 +29,9 @@ public class Checkpoint {
   public Type type = Type.CHECKPOINT;
   @Nullable public String trailFrom = null;
 
-  private Checkpoint() {}
+  private Checkpoint() {
+    register();
+  }
 
   public Checkpoint(
       String name, String previousCheckpointName, Shape3D shape, Type type, String trailFrom) {
@@ -30,6 +40,7 @@ public class Checkpoint {
     this.shape = shape;
     this.type = type;
     this.trailFrom = trailFrom;
+    register();
   }
 
   public static Result<Checkpoint, ErrorReport<ErrorPathContext>> fromJsonObject(
@@ -139,5 +150,99 @@ public class Checkpoint {
     jsonObject.put("type", type.name());
     jsonObject.put("trailFrom", trailFrom);
     return jsonObject;
+  }
+
+  private void register() {
+    App.instance.getServer().getPluginManager().registerEvents(this, App.instance);
+  }
+
+  @EventHandler
+  public void onPlayerMove(PlayerMoveEvent event) {
+    switch (type) {
+      case CHECKPOINT:
+        onPlayerMoveCheckpoint(event);
+        break;
+      case TREASURE_BEACON:
+        onPlayerMoveTreasureBeacon(event);
+        break;
+    }
+  }
+
+  private void onPlayerMoveCheckpoint(PlayerMoveEvent event) {
+    if (previousCheckpointName == null) {
+      return;
+    }
+
+    Result<PlayerData, String> playerDataResult =
+        PlayerTrackerDataStore.getStore().getPlayerData(event.getPlayer());
+
+    if (playerDataResult.isError()) {
+      event.getPlayer().sendMessage("Failed to get player data: " + playerDataResult.getError());
+      return;
+    }
+
+    PlayerData playerData = playerDataResult.getValue();
+
+    if (!previousCheckpointName.equals(playerData.getCurrentCheckpointName())) {
+      return;
+    }
+
+    if (!shape.contains(event.getTo())) {
+      return;
+    }
+
+    if (shape.contains(event.getFrom())) {
+      return;
+    }
+
+    Result<Boolean, String> visitCheckpointResult = playerData.visitCheckpoint(name);
+
+    if (visitCheckpointResult.isError()) {
+      event
+          .getPlayer()
+          .sendMessage("Failed to visit checkpoint: " + visitCheckpointResult.getError());
+      return;
+    }
+
+    PlayerUtils.sendTitleToPlayer(
+        event.getPlayer(), ChatColor.DARK_PURPLE + name, "Reached Checkpoint");
+  }
+
+  private void onPlayerMoveTreasureBeacon(PlayerMoveEvent event) {
+    Result<PlayerData, String> playerDataResult =
+        PlayerTrackerDataStore.getStore().getPlayerData(event.getPlayer());
+
+    if (playerDataResult.isError()) {
+      event.getPlayer().sendMessage("Failed to get player data: " + playerDataResult.getError());
+      return;
+    }
+
+    PlayerData playerData = playerDataResult.getValue();
+
+    if (!previousCheckpointName.equals(playerData.getCurrentCheckpointName())) {
+      return;
+    }
+
+    if (!shape.contains(event.getTo())) {
+      return;
+    }
+
+    if (shape.contains(event.getFrom())) {
+      return;
+    }
+
+    Result<Boolean, String> visitTreasureBeaconCheckpointResult =
+        playerData.visitTreasureBeaconCheckpoint(name);
+
+    if (visitTreasureBeaconCheckpointResult.isError()) {
+      event
+          .getPlayer()
+          .sendMessage(
+              "Failed to visit treasure beacon: " + visitTreasureBeaconCheckpointResult.getError());
+      return;
+    }
+
+    PlayerUtils.sendTitleToPlayer(
+        event.getPlayer(), ChatColor.DARK_PURPLE + name, "Reached Treasure Beacon");
   }
 }

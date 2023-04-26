@@ -19,11 +19,20 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.PlayerUtils;
 
 public class PlayerData {
+  public enum RaceStatus {
+    NOT_STARTED,
+    STARTED,
+    FINISHED,
+  }
+
   private PlayerTrackerDataStore store;
   public UUID uuid;
   private int points;
   private Set<UUID> openedTreasureChests = new HashSet<>();
   private int timeRemainingSeconds = 60 * 60 * 3; // 3 hours
+  private Set<String> visitedCheckpoints = new HashSet<>();
+  private String currentCheckpointName = "START";
+  private RaceStatus raceStatus = RaceStatus.NOT_STARTED;
 
   private PlayerData() {}
 
@@ -43,6 +52,21 @@ public class PlayerData {
     return Result.ok(true);
   }
 
+  public Result<Boolean, String> visitCheckpoint(String checkpointName) {
+    visitedCheckpoints.add(checkpointName);
+    currentCheckpointName = checkpointName;
+    return save();
+  }
+
+  public Result<Boolean, String> visitTreasureBeaconCheckpoint(String checkpointName) {
+    visitedCheckpoints.add(checkpointName);
+    return save();
+  }
+
+  public String getCurrentCheckpointName() {
+    return currentCheckpointName;
+  }
+
   public Result<Boolean, String> addPoints(int points) {
     this.points += points;
     return save();
@@ -50,6 +74,15 @@ public class PlayerData {
 
   public int getPoints() {
     return points;
+  }
+
+  public Result<Boolean, String> setRaceStatus(RaceStatus raceStatus) {
+    this.raceStatus = raceStatus;
+    return save();
+  }
+
+  public RaceStatus getRaceStatus() {
+    return raceStatus;
   }
 
   public Result<Boolean, String> addOpenedTreasureChest(UUID treasureChestUuid) {
@@ -75,7 +108,9 @@ public class PlayerData {
   }
 
   public void tickSecondWithoutSave() {
-    // TODO: Skip players who haven't started the treasure hunt yet
+    if (raceStatus != RaceStatus.STARTED) {
+      return;
+    }
 
     // Skip players who have run out of time
     if (!hasTimeRemaining()) {
@@ -126,7 +161,6 @@ public class PlayerData {
   public static Result<PlayerData, ErrorReport<ErrorPathContext>> fromJsonObject(
       ErrorPathContext context, JSONObject value) {
     PlayerData playerData = new PlayerData();
-    boolean error = false;
     ErrorReportBuilder<ErrorPathContext> errorReportBuilder =
         new ErrorReportBuilder<>(context, "Failed to parse player data");
 
@@ -134,25 +168,36 @@ public class PlayerData {
     boolean hasPoints = value.has("points");
     boolean hasOpenedTreasureChests = value.has("openedTreasureChests");
     boolean hasTimeRemainingSeconds = value.has("timeRemainingSeconds");
+    boolean hasVisitedCheckpoints = value.has("visitedCheckpoints");
+    boolean hasCurrentCheckpointName = value.has("currentCheckpointName");
+    boolean hasRaceStatus = value.has("raceStatus");
 
     if (!hasUuid) {
       errorReportBuilder.addDetail(new ErrorDetail("Missing key 'uuid'"));
-      error = true;
     }
 
     if (!hasPoints) {
       errorReportBuilder.addDetail(new ErrorDetail("Missing key 'points'"));
-      error = true;
     }
 
     if (!hasOpenedTreasureChests) {
       errorReportBuilder.addDetail(new ErrorDetail("Missing key 'openedTreasureChests'"));
-      error = true;
     }
 
     if (!hasTimeRemainingSeconds) {
       errorReportBuilder.addDetail(new ErrorDetail("Missing key 'timeRemainingSeconds'"));
-      error = true;
+    }
+
+    if (!hasVisitedCheckpoints) {
+      errorReportBuilder.addDetail(new ErrorDetail("Missing key 'visitedCheckpoints'"));
+    }
+
+    if (!hasCurrentCheckpointName) {
+      errorReportBuilder.addDetail(new ErrorDetail("Missing key 'currentCheckpointName'"));
+    }
+
+    if (!hasRaceStatus) {
+      errorReportBuilder.addDetail(new ErrorDetail("Missing key 'raceStatus'"));
     }
 
     if (hasUuid) {
@@ -161,7 +206,6 @@ public class PlayerData {
       } catch (IllegalArgumentException e) {
         errorReportBuilder.addDetail(
             new ErrorDetail("Failed to parse 'uuid' as UUID string: " + e.getMessage()));
-        error = true;
       }
     }
 
@@ -171,7 +215,6 @@ public class PlayerData {
       } catch (IllegalArgumentException e) {
         errorReportBuilder.addDetail(
             new ErrorDetail("Failed to parse 'points' as integer: " + e.getMessage()));
-        error = true;
       }
     }
 
@@ -184,7 +227,6 @@ public class PlayerData {
             new ErrorDetail(
                 "Failed to parse 'openedTreasureChests' as array of UUID strings: "
                     + e.getMessage()));
-        error = true;
       }
 
       if (openedTreasureChests != null) {
@@ -199,7 +241,6 @@ public class PlayerData {
                         "Failed to parse UUID string")
                     .addDetail(new ErrorDetail(e.getMessage()))
                     .build());
-            error = true;
           }
         }
       }
@@ -212,15 +253,46 @@ public class PlayerData {
         errorReportBuilder.addDetail(
             new ErrorDetail(
                 "Failed to parse 'timeRemainingSeconds' as integer: " + e.getMessage()));
-        error = true;
       }
     }
 
-    if (error) {
-      return Result.error(errorReportBuilder.build());
-    } else {
-      return Result.ok(playerData);
+    if (hasVisitedCheckpoints) {
+      try {
+        JSONArray visitedCheckpoints = value.getJSONArray("visitedCheckpoints");
+        for (int i = 0; i < visitedCheckpoints.length(); i++) {
+          playerData.visitedCheckpoints.add(visitedCheckpoints.getString(i));
+        }
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail(
+                "Failed to parse 'visitedCheckpoints' as array of strings: " + e.getMessage()));
+      }
     }
+
+    if (hasCurrentCheckpointName) {
+      try {
+        playerData.currentCheckpointName = value.getString("currentCheckpointName");
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail(
+                "Failed to parse 'currentCheckpointName' as string: " + e.getMessage()));
+      }
+    }
+
+    if (hasRaceStatus) {
+      try {
+        playerData.raceStatus = RaceStatus.valueOf(value.getString("raceStatus"));
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail("Failed to parse 'raceStatus' as RaceStatus: " + e.getMessage()));
+      }
+    }
+
+    if (errorReportBuilder.hasErrors()) {
+      return Result.error(errorReportBuilder.build());
+    }
+
+    return Result.ok(playerData);
   }
 
   public JSONObject toJsonObject() {
@@ -229,6 +301,9 @@ public class PlayerData {
     jsonObject.put("points", points);
     jsonObject.put("openedTreasureChests", openedTreasureChests);
     jsonObject.put("timeRemainingSeconds", timeRemainingSeconds);
+    jsonObject.put("visitedCheckpoints", visitedCheckpoints);
+    jsonObject.put("currentCheckpointName", currentCheckpointName);
+    jsonObject.put("raceStatus", raceStatus.name());
     return jsonObject;
   }
 }
