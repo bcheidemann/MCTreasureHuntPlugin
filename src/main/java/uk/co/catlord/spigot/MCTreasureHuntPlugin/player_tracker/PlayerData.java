@@ -52,6 +52,21 @@ public class PlayerData {
     return Result.ok(true);
   }
 
+  public Result<Boolean, String> visitCheckpoint(String checkpointName) {
+    visitedCheckpoints.add(checkpointName);
+    currentCheckpointName = checkpointName;
+    return save();
+  }
+
+  public Result<Boolean, String> visitTreasureBeaconCheckpoint(String checkpointName) {
+    visitedCheckpoints.add(checkpointName);
+    return save();
+  }
+
+  public String getCurrentCheckpointName() {
+    return currentCheckpointName;
+  }
+
   public Result<Boolean, String> addPoints(int points) {
     this.points += points;
     return save();
