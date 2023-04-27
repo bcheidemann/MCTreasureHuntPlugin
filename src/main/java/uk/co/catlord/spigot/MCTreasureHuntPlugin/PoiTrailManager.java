@@ -24,7 +24,7 @@ public class PoiTrailManager implements Listener {
 
     Location start = PlayerUtils.getLocationInfrontOfPlayer(event.getPlayer(), 1).add(0, 1, 0);
     Location poiLocation = event.getPlayer().getLocation().add(20, 1, 10);
-    ParticleTrailUtils.createParticleTrail(start, poiLocation, 10, Color.BLACK);
+    ParticleTrailUtils.createParticleTrail(start, poiLocation, 10, Color.PURPLE);
 
     event.setCancelled(true);
   }
