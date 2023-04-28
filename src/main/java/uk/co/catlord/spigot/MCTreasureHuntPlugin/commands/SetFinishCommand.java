@@ -49,6 +49,7 @@ public class SetFinishCommand extends RegisterableCommand {
             options.previousCheckpointName,
             new Point(options.location),
             Checkpoint.Type.CHECKPOINT,
+            null,
             null);
     Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 
@@ -118,7 +119,7 @@ public class SetFinishCommand extends RegisterableCommand {
     // Check if the previous checkpoint is valid
     String previousCheckpointName = args[3];
 
-    if (previousCheckpointName == null || previousCheckpointName == "") {
+    if (previousCheckpointName == null || previousCheckpointName.equals("")) {
       sender.sendMessage(ChatColor.RED + "The previous checkpoint must be a valid string.");
       return null;
     }
