@@ -1,7 +1,7 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints;
 
-import javax.annotation.Nullable;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -24,22 +24,29 @@ public class Checkpoint implements Listener {
   }
 
   public String name;
-  @Nullable public String previousCheckpointName = null;
+  public String previousCheckpointName = null;
   public Shape3D shape;
   public Type type = Type.CHECKPOINT;
-  @Nullable public String trailFrom = null;
+  public String trailFrom = null;
+  public Color color = null;
 
   private Checkpoint() {
     register();
   }
 
   public Checkpoint(
-      String name, String previousCheckpointName, Shape3D shape, Type type, String trailFrom) {
+      String name,
+      String previousCheckpointName,
+      Shape3D shape,
+      Type type,
+      String trailFrom,
+      Color color) {
     this.name = name;
     this.previousCheckpointName = previousCheckpointName;
     this.shape = shape;
     this.type = type;
     this.trailFrom = trailFrom;
+    this.color = color;
     register();
   }
 
@@ -55,6 +62,7 @@ public class Checkpoint implements Listener {
     boolean hasShape = value.has("shape");
     boolean hasType = value.has("type");
     boolean hasTrailFrom = value.has("trailFrom");
+    boolean hasColor = value.has("color");
 
     if (!hasName) {
       errorReportBuilder.addDetail(new ErrorReport<>(context, "Missing 'name'"));
@@ -134,6 +142,15 @@ public class Checkpoint implements Listener {
       }
     }
 
+    if (hasColor) {
+      try {
+        checkpoint.color = Color.fromRGB(value.getInt("color"));
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail("Failed to parse 'color' as integer: " + e.getMessage()));
+      }
+    }
+
     // Return the result
     if (errorReportBuilder.hasErrors()) {
       return Result.error(errorReportBuilder.build());
@@ -149,6 +166,10 @@ public class Checkpoint implements Listener {
     jsonObject.put("shape", shape.toJsonObject());
     jsonObject.put("type", type.name());
     jsonObject.put("trailFrom", trailFrom);
+    if (color != null) {
+      jsonObject.put("color", color.asRGB());
+    }
+
     return jsonObject;
   }
 
@@ -182,6 +203,10 @@ public class Checkpoint implements Listener {
     }
 
     PlayerData playerData = playerDataResult.getValue();
+
+    if (previousCheckpointName == null) {
+      return;
+    }
 
     if (!previousCheckpointName.equals(playerData.getCurrentCheckpointName())) {
       return;
@@ -219,7 +244,11 @@ public class Checkpoint implements Listener {
 
     PlayerData playerData = playerDataResult.getValue();
 
-    if (!previousCheckpointName.equals(playerData.getCurrentCheckpointName())) {
+    if (trailFrom == null) {
+      return;
+    }
+
+    if (!trailFrom.equals(playerData.getCurrentCheckpointName())) {
       return;
     }
 
@@ -244,5 +273,9 @@ public class Checkpoint implements Listener {
 
     PlayerUtils.sendTitleToPlayer(
         event.getPlayer(), ChatColor.DARK_PURPLE + name, "Reached Treasure Beacon");
+  }
+
+  public boolean isTreasureBeacon() {
+    return type == Type.TREASURE_BEACON;
   }
 }

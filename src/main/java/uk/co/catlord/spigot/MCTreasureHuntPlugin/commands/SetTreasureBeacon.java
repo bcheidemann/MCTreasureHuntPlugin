@@ -3,6 +3,7 @@ package uk.co.catlord.spigot.MCTreasureHuntPlugin.commands;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -37,7 +38,11 @@ public class SetTreasureBeacon extends RegisterableCommand {
       return List.of("<radius>");
     }
 
-    if (args.length > 6) {
+    if (args.length == 7) {
+      return List.of("<difficulty>", "EASY", "MEDIUM", "HARD");
+    }
+
+    if (args.length > 7) {
       return List.of();
     }
 
@@ -61,7 +66,8 @@ public class SetTreasureBeacon extends RegisterableCommand {
             null,
             new Sphere(options.location, options.radius),
             Checkpoint.Type.TREASURE_BEACON,
-            options.trailFrom);
+            options.trailFrom,
+            options.color);
     Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 
     // Feedback to the player
@@ -93,9 +99,12 @@ public class SetTreasureBeacon extends RegisterableCommand {
     Player player = (Player) sender;
 
     // Check if the command has the correct number of arguments
-    if (args.length != 6) {
+    if (args.length != 7) {
       sender.sendMessage(
-          ChatColor.RED + "USAGE: /" + label + " <x> <y> <z> <name> <trail-from> <radius>");
+          ChatColor.RED
+              + "USAGE: /"
+              + label
+              + " <x> <y> <z> <name> <trail-from> <radius> <difficulty>");
       return null;
     }
 
@@ -129,7 +138,7 @@ public class SetTreasureBeacon extends RegisterableCommand {
     // Check if the name is valid
     String name = args[3];
 
-    if (name == null || name == "") {
+    if (name == null || name.equals("")) {
       sender.sendMessage(ChatColor.RED + "The name must be a valid string.");
       return null;
     }
@@ -142,7 +151,7 @@ public class SetTreasureBeacon extends RegisterableCommand {
     // Check if the previous checkpoint is valid
     String trailFrom = args[4];
 
-    if (trailFrom == null || trailFrom == "") {
+    if (trailFrom == null || trailFrom.equals("")) {
       sender.sendMessage(ChatColor.RED + "The previous checkpoint must be a valid string.");
       return null;
     }
@@ -170,6 +179,17 @@ public class SetTreasureBeacon extends RegisterableCommand {
       return null;
     }
 
+    // Check if the difficulty is valid
+    String difficulty = args[6];
+    if (difficulty == null
+        || difficulty.equals("")
+        || (!difficulty.equals("EASY")
+            && !difficulty.equals("MEDIUM")
+            && !difficulty.equals("HARD"))) {
+      sender.sendMessage(ChatColor.RED + "The difficulty must be either EASY, MEDIUM, or HARD.");
+      return null;
+    }
+
     // Create the location object
     Location location = new Location(player.getWorld(), x, y, z);
 
@@ -191,6 +211,19 @@ public class SetTreasureBeacon extends RegisterableCommand {
     // Set the previous checkpoint name
     options.trailFrom = trailFrom;
 
+    // Set the color
+    switch (difficulty) {
+      case "EASY":
+        options.color = Color.LIME;
+        break;
+      case "MEDIUM":
+        options.color = Color.PURPLE;
+        break;
+      case "HARD":
+        options.color = Color.BLACK;
+        break;
+    }
+
     // Return the command options
     return options;
   }
@@ -201,5 +234,6 @@ public class SetTreasureBeacon extends RegisterableCommand {
     public String name;
     public String trailFrom;
     public float radius;
+    public Color color;
   }
 }

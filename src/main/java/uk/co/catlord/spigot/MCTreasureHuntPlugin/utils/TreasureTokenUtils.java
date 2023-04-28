@@ -8,17 +8,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class TreasureTokenUtils {
-  private static String TREASURE_TOKEN_LORE_ID = ">> Treasure Token <<";
+  private static String TREASURE_TOKEN_LORE_ID = ">> Time Shard <<";
 
   public static ItemStack createTreasureTokenItemStack(int count) {
     ItemStack itemStack = new ItemStack(Material.AMETHYST_SHARD, count);
     itemStack.addUnsafeEnchantment(Enchantment.MENDING, 1);
     ItemMeta itemMeta = itemStack.getItemMeta();
-    itemMeta.setDisplayName("Treasure Token");
+    itemMeta.setDisplayName("Time Shard");
     itemMeta.setLore(
         List.of(
             "",
-            "" + ChatColor.GOLD + ChatColor.BOLD + "Treasure Token",
+            "" + ChatColor.GOLD + ChatColor.BOLD + "Time Shard",
             ChatColor.GRAY + "You receive one point per token you collect, immediately",
             ChatColor.GRAY + "upon collecting it, and you can cache in each token at a",
             ChatColor.GRAY + "checkpoint to add an extra minute back onto your time.",

@@ -61,6 +61,7 @@ public class SetCheckpointCommand extends RegisterableCommand {
             options.previousCheckpointName,
             new Sphere(options.location, options.radius),
             Checkpoint.Type.CHECKPOINT,
+            null,
             null);
     Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 
@@ -131,7 +132,7 @@ public class SetCheckpointCommand extends RegisterableCommand {
     // Check if the name is valid
     String name = args[3];
 
-    if (name == null || name == "") {
+    if (name == null || name.equals("")) {
       sender.sendMessage(ChatColor.RED + "The name must be a valid string.");
       return null;
     }
@@ -144,7 +145,7 @@ public class SetCheckpointCommand extends RegisterableCommand {
     // Check if the previous checkpoint is valid
     String previousCheckpointName = args[4];
 
-    if (previousCheckpointName == null || previousCheckpointName == "") {
+    if (previousCheckpointName == null || previousCheckpointName.equals("")) {
       sender.sendMessage(ChatColor.RED + "The previous checkpoint must be a valid string.");
       return null;
     }

@@ -40,7 +40,7 @@ public class GiveTreasureTokenCommand extends RegisterableCommand {
       return true;
     }
 
-    // Give the player a treasure token
+    // Give the player a Time Shard
     ItemStack treasureTokenItemStack =
         TreasureTokenUtils.createTreasureTokenItemStack(options.count);
     PlayerUtils.givePlayerItemStack(options.player, treasureTokenItemStack);
