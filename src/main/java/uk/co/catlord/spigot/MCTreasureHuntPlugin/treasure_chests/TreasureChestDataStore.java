@@ -182,7 +182,8 @@ public class TreasureChestDataStore extends JsonDataStore {
     ArrayList<TreasureChest> treasureChests = new ArrayList<>();
 
     for (TreasureChest treasureChest : this.treasureChests) {
-      if (treasureChest.checkpointName != null && treasureChest.checkpointName.equals(checkpointName)) {
+      if (treasureChest.checkpointName != null
+          && treasureChest.checkpointName.equals(checkpointName)) {
         treasureChests.add(treasureChest);
       }
     }
