@@ -67,7 +67,7 @@ public class SetTreasureBeacon extends RegisterableCommand {
             new Sphere(options.location, options.radius),
             Checkpoint.Type.TREASURE_BEACON,
             options.trailFrom,
-            Color.LIME);
+            options.color);
     Result<?, String> result = CheckpointDataStore.getStore().addCheckpoint(checkpoint);
 
     // Feedback to the player

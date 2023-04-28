@@ -204,6 +204,10 @@ public class Checkpoint implements Listener {
 
     PlayerData playerData = playerDataResult.getValue();
 
+    if (previousCheckpointName == null) {
+      return;
+    }
+
     if (!previousCheckpointName.equals(playerData.getCurrentCheckpointName())) {
       return;
     }
@@ -240,7 +244,11 @@ public class Checkpoint implements Listener {
 
     PlayerData playerData = playerDataResult.getValue();
 
-    if (!previousCheckpointName.equals(playerData.getCurrentCheckpointName())) {
+    if (trailFrom == null) {
+      return;
+    }
+
+    if (!trailFrom.equals(playerData.getCurrentCheckpointName())) {
       return;
     }
 
@@ -265,5 +273,9 @@ public class Checkpoint implements Listener {
 
     PlayerUtils.sendTitleToPlayer(
         event.getPlayer(), ChatColor.DARK_PURPLE + name, "Reached Treasure Beacon");
+  }
+
+  public boolean isTreasureBeacon() {
+    return type == Type.TREASURE_BEACON;
   }
 }

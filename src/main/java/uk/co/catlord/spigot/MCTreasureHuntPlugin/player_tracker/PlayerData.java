@@ -58,6 +58,10 @@ public class PlayerData {
     return save();
   }
 
+  public boolean hasVisitedCheckpoint(String checkpointName) {
+    return visitedCheckpoints.contains(checkpointName);
+  }
+
   public Result<Boolean, String> visitTreasureBeaconCheckpoint(String checkpointName) {
     visitedCheckpoints.add(checkpointName);
     return save();
