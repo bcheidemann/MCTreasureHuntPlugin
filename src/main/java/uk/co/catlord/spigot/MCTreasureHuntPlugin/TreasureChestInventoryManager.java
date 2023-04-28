@@ -1,9 +1,11 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -20,6 +22,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.Checkpoint;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.CheckpointDataStore;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerData;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerTrackerDataStore;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChest;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.PlayerUtils;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TreasureChestUtils;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.TreasureTokenUtils;
@@ -95,6 +103,9 @@ public class TreasureChestInventoryManager implements Listener {
 
   @EventHandler
   public void onChestOpen(PlayerInteractEvent event) {
+    if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
+      return;
+    }
     if (event.getAction() == Action.RIGHT_CLICK_BLOCK
         && isBlockTreasureChest(event.getClickedBlock())) {
       event.setCancelled(true);
@@ -128,22 +139,70 @@ public class TreasureChestInventoryManager implements Listener {
       player.openInventory(inventory);
       PlayerUtils.givePlayerPoints(player, points);
       PlayerUtils.setPlayerOpenedTreasureChest(player, event.getClickedBlock());
+
+      // Count chests in area
+      String checkpointName =
+          TreasureChestUtils.getTreasureChestCheckpoint(event.getClickedBlock());
+      List<TreasureChest> chestsInArea =
+          TreasureChestUtils.getChestsWithSameCheckpoint(event.getClickedBlock());
+      Result<PlayerData, String> playerDataResult =
+          PlayerTrackerDataStore.getStore().getPlayerData(player);
+      if (playerDataResult.isError()) {
+        player.sendMessage("Error: " + playerDataResult.getError());
+        return;
+      }
+      PlayerData playerData = playerDataResult.getValue();
+      int chestsLooted = 0;
+      for (TreasureChest treasureChest : chestsInArea) {
+        if (playerData.hasOpenedTreasureChest(treasureChest.uuid)) {
+          chestsLooted++;
+        }
+      }
+
+      // Show title to player
+      Checkpoint checkpoint = CheckpointDataStore.getStore().getCheckpointByName(checkpointName);
+      if (checkpoint == null) {
+        checkpointName = "in the wilderness";
+      } else if (checkpoint.type == Checkpoint.Type.CHECKPOINT) {
+        if (checkpointName.equals("START")) {
+          checkpointName = "the start";
+        } else if (checkpointName.equals("FINISH")) {
+          checkpointName = "the finish";
+        }
+        checkpointName = "in the wilderness near " + checkpointName;
+      } else if (checkpoint.type == Checkpoint.Type.TREASURE_BEACON) {
+        checkpointName = "at " + checkpointName;
+      }
+
+      event
+          .getPlayer()
+          .sendMessage(
+              "" + ChatColor.GRAY + ChatColor.BOLD + "Chest Looted! ",
+              ChatColor.GRAY
+                  + "("
+                  + chestsLooted
+                  + " / "
+                  + chestsInArea.size()
+                  + " "
+                  + checkpointName
+                  + ")");
     }
   }
 
   @EventHandler
   public void onCloseChest(InventoryCloseEvent event) {
     Inventory inventory = event.getInventory();
-    if (isTreasureChestInventory(event.getPlayer(), inventory)) {
-      HumanEntity player = event.getPlayer();
-      ItemStack itemStack;
-      for (int i = 0; i < 27; i++) {
-        itemStack = inventory.getItem(i);
-        if (itemStack != null) {
-          PlayerUtils.givePlayerItemStack(player, itemStack);
-        }
-      }
-      inventory.clear();
+    if (!isTreasureChestInventory(event.getPlayer(), inventory)) {
+      return;
     }
+    HumanEntity player = event.getPlayer();
+    ItemStack itemStack;
+    for (int i = 0; i < 27; i++) {
+      itemStack = inventory.getItem(i);
+      if (itemStack != null) {
+        PlayerUtils.givePlayerItemStack(player, itemStack);
+      }
+    }
+    inventory.clear();
   }
 }

@@ -8,7 +8,7 @@ commands:
     usage: "Usage: /give-treasure-token <count>"
   set-treasure-chest:
     description: Sets a chest as a treasure chest
-    usage: "Usage: /set-treasure-chest <x> <y> <z>"
+    usage: "Usage: /set-treasure-chest <x> <y> <z> <checkpoint>"
   delete-treasure-chest:
     description: Deletes a treasure chest
     usage: "Usage: /delete-treasure-chest <x> <y> <z>"

@@ -19,14 +19,16 @@ public class TreasureChest {
   public String displayName;
   public Type type;
   public Location location;
+  public String checkpointName;
 
   private TreasureChest() {}
 
-  public TreasureChest(Location location) {
+  public TreasureChest(Location location, String checkpointName) {
     this.uuid = UUID.randomUUID();
     this.displayName = "Treasure Chest";
     this.type = Type.TREASURE_CHEST;
     this.location = location;
+    this.checkpointName = checkpointName;
   }
 
   public static Result<TreasureChest, ErrorReport<ErrorPathContext>> fromJsonObject(
@@ -40,6 +42,7 @@ public class TreasureChest {
     boolean hasDisplayName = value.has("displayName");
     boolean hasType = value.has("type");
     boolean hasLocation = value.has("location");
+    boolean hasCheckpointName = value.has("checkpointName");
 
     if (!hasUuid) {
       errorReportBuilder.addDetail(new ErrorDetail("Missing key 'uuid'"));
@@ -114,6 +117,16 @@ public class TreasureChest {
       treasureChest.location = locationParseResult.getValue();
     }
 
+    if (hasCheckpointName) {
+      try {
+        treasureChest.checkpointName = value.getString("checkpointName");
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail("Failed to parse 'checkpointName' as string: " + e.getMessage()));
+        error = true;
+      }
+    }
+
     if (error) {
       return Result.error(errorReportBuilder.build());
     }
@@ -127,6 +140,7 @@ public class TreasureChest {
     jsonObject.put("displayName", displayName);
     jsonObject.put("type", type.toString());
     jsonObject.put("location", JsonParser.generateLocationJson(location));
+    jsonObject.put("checkpointName", checkpointName);
     return jsonObject;
   }
 
