@@ -1,11 +1,13 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.CheckpointDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChest;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChestDataStore;
@@ -21,6 +23,13 @@ public class SetTreasureChestCommand extends RegisterableCommand {
   @Override
   public List<String> onTabComplete(
       CommandSender sender, Command command, String label, String[] args) {
+    if (args.length == 4) {
+      List<String> options = new ArrayList<String>(List.of("<checkpoint>"));
+      options.addAll(CheckpointDataStore.getStore().getCheckpointNames());
+
+      return options;
+    }
+
     return CommandUtils.tabCompleteTargetedBlockCoorinates(
         sender,
         command,
@@ -41,7 +50,7 @@ public class SetTreasureChestCommand extends RegisterableCommand {
     }
 
     // Create the treasure chest
-    TreasureChest treasureChest = new TreasureChest(options.location);
+    TreasureChest treasureChest = new TreasureChest(options.location, options.checkpoint);
     Result<?, String> result = TreasureChestDataStore.getStore().addTreasureChest(treasureChest);
 
     // Feedback to the player
@@ -73,8 +82,8 @@ public class SetTreasureChestCommand extends RegisterableCommand {
     Player player = (Player) sender;
 
     // Check if the command has the correct number of arguments
-    if (args.length != 3) {
-      sender.sendMessage(ChatColor.RED + "USAGE: /" + label + " <x> <y> <z>");
+    if (args.length != 4) {
+      sender.sendMessage(ChatColor.RED + "USAGE: /" + label + " <x> <y> <z> <checkpoint>");
       return null;
     }
 
@@ -118,6 +127,19 @@ public class SetTreasureChestCommand extends RegisterableCommand {
       return null;
     }
 
+    // Check if the previous checkpoint is valid
+    String checkpoint = args[3];
+
+    if (checkpoint == null || checkpoint.equals("")) {
+      sender.sendMessage(ChatColor.RED + "The checkpoint must be a valid string.");
+      return null;
+    }
+
+    if (CheckpointDataStore.getStore().getCheckpointByName(checkpoint) == null) {
+      sender.sendMessage(ChatColor.RED + "The checkpoint (" + checkpoint + ") does not exist.");
+      return null;
+    }
+
     // Create the command options object
     CommandOptions options = new CommandOptions();
 
@@ -127,6 +149,9 @@ public class SetTreasureChestCommand extends RegisterableCommand {
     // Set the location
     options.location = location;
 
+    // Set the checkpoint
+    options.checkpoint = checkpoint;
+
     // Return the command options
     return options;
   }
@@ -134,5 +159,6 @@ public class SetTreasureChestCommand extends RegisterableCommand {
   class CommandOptions {
     public Player player;
     public Location location;
+    public String checkpoint;
   }
 }

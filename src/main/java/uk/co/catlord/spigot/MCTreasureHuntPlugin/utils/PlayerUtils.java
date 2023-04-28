@@ -74,7 +74,7 @@ public class PlayerUtils {
   public static void celebration(HumanEntity player) {
     playCelebratorySound(player);
 
-    if (hasRoofOverhead(player, 4)) {
+    if (hasRoofOverhead(player, 16)) {
       return;
     }
 
