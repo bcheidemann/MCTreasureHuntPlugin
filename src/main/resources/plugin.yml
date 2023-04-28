@@ -4,7 +4,7 @@ version: dev
 api-version: 1.19
 commands:
   give-treasure-token:
-    description: Gives a player some number of treasure tokens
+    description: Gives a player some number of Time Shards
     usage: "Usage: /give-treasure-token <count>"
   set-treasure-chest:
     description: Sets a chest as a treasure chest
