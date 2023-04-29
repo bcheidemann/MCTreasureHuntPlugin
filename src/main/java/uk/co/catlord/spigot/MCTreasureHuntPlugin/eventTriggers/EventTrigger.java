@@ -158,6 +158,24 @@ public abstract class EventTrigger {
     BroadcastUtils.broadcastRaceEvent(player.getDisplayName() + " has completed the hunt!");
     player.setGameMode(GameMode.SPECTATOR);
     PlayerUtils.celebration(player, true);
+
+    // Apply finishing bonus
+    int minutesRemaining = Math.floorDiv(playerData.getTimeRemainingSeconds(), 60);
+    int finishingBonus = minutesRemaining + 50;
+    playerData.addPoints(finishingBonus);
+    int finalPoints = playerData.getPoints();
+
+    // Send Score
+    BroadcastUtils.broadcastRaceEvent(
+        ChatColor.LIGHT_PURPLE
+            + player.getName()
+            + " finished with "
+            + ChatColor.DARK_PURPLE
+            + finalPoints
+            + ChatColor.LIGHT_PURPLE
+            + " points (including a bonus of 50 points for finishing the race and "
+            + minutesRemaining
+            + " points for time remaining)!");
   }
 
   private PlayerData getPlayerData(Player player) {

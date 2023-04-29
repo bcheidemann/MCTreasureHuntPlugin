@@ -20,6 +20,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReportBuilder;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.parsers.json.JsonParser;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.BroadcastUtils;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.PlayerUtils;
 
 public class PlayerData {
@@ -181,9 +182,26 @@ public class PlayerData {
       PlayerUtils.sendTitleToAllPlayers(ChatColor.RED + player.getName(), "ran out of time!");
 
       // Send chat message to all players
-      App.instance
-          .getServer()
-          .broadcastMessage(ChatColor.RED + player.getName() + " ran out of time!");
+      Result<PlayerData, String> playerDataResult =
+          PlayerTrackerDataStore.getStore().getPlayerData(player);
+
+      if (playerDataResult.isError()) {
+        player.sendMessage(
+            ChatColor.RED
+                + "Failed to get player data on elimination (report this to an admin): "
+                + playerDataResult.getError());
+        return;
+      }
+
+      PlayerData playerData = playerDataResult.getValue();
+      int finalPoints = playerData.getPoints();
+      BroadcastUtils.broadcastRaceEvent(
+          ChatColor.RED
+              + player.getName()
+              + " ran out of time with a score of "
+              + finalPoints
+              + " points!");
+      playerData.setRaceStatus(RaceStatus.FINISHED);
     }
   }
 
