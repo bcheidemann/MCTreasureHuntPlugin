@@ -42,9 +42,10 @@ public class App extends JavaPlugin {
 
     // Managers
     PoiTrailManager.register(this);
-    TreasureChestInventoryManager.register(this);
     TimeShardDepositChestBlockManager.register(this);
+    TimeShardDepositChestInventoryManager.register(this);
     TreasureChestBlockManager.register(this);
+    TreasureChestInventoryManager.register(this);
 
     // Commands
     new CompassCommand().register(this);

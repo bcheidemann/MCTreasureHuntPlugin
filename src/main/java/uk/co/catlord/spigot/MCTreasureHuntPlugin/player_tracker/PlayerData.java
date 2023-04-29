@@ -80,6 +80,11 @@ public class PlayerData {
     return points;
   }
 
+  public Result<Boolean, String> addTimeSeconds(int seconds) {
+    timeRemainingSeconds += seconds;
+    return save();
+  }
+
   public Result<Boolean, String> setRaceStatus(RaceStatus raceStatus) {
     this.raceStatus = raceStatus;
     return save();
