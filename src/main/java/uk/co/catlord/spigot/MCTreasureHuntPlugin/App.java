@@ -8,6 +8,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.GiveTreasureTokenComma
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.MyCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.ResetTreasureHuntCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetCheckpointCommand;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetCheckpointRespawnPointCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetFinishCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetPlayerTimeCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetStartCommand;
@@ -37,10 +38,9 @@ public class App extends JavaPlugin {
   }
 
   private boolean register() {
-    // Scheduled Tasks
-    PlayerActionBarDisplayManager.register(this);
-
     // Managers
+    PlayerActionBarDisplayManager.register(this);
+    PlayerRespawnManager.register(this);
     PoiTrailManager.register(this);
     TimeShardDepositChestBlockManager.register(this);
     TimeShardDepositChestInventoryManager.register(this);
@@ -54,6 +54,7 @@ public class App extends JavaPlugin {
     new MyCommand().register(this);
     new ResetTreasureHuntCommand().register(this);
     new SetCheckpointCommand().register(this);
+    new SetCheckpointRespawnPointCommand().register(this);
     new SetFinishCommand().register(this);
     new SetPlayerTimeCommand().register(this);
     new SetStartCommand().register(this);
