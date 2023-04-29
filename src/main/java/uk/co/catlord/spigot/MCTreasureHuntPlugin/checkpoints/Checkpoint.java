@@ -231,6 +231,8 @@ public class Checkpoint implements Listener {
 
     PlayerUtils.sendTitleToPlayer(
         event.getPlayer(), ChatColor.DARK_PURPLE + name, "Reached Checkpoint");
+
+    CheckpointDataStore.getStore().updateCompassForPlayer(event.getPlayer());
   }
 
   private void onPlayerMoveTreasureBeacon(PlayerMoveEvent event) {
