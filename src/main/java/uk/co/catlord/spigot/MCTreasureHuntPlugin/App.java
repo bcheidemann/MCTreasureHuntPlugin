@@ -11,6 +11,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetCheckpointCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetFinishCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetPlayerTimeCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetStartCommand;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetTimeShardDepositChest;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetTreasureBeacon;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetTreasureChestCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
@@ -18,6 +19,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.eventTriggers.EventTriggersDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerTrackerDataStore;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.time_shard_deposit_chests.TimeShardDepositChestDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.treasure_chests.TreasureChestDataStore;
 
 public class App extends JavaPlugin {
@@ -40,8 +42,10 @@ public class App extends JavaPlugin {
 
     // Managers
     PoiTrailManager.register(this);
-    TreasureChestInventoryManager.register(this);
+    TimeShardDepositChestBlockManager.register(this);
+    TimeShardDepositChestInventoryManager.register(this);
     TreasureChestBlockManager.register(this);
+    TreasureChestInventoryManager.register(this);
 
     // Commands
     new CompassCommand().register(this);
@@ -53,6 +57,7 @@ public class App extends JavaPlugin {
     new SetFinishCommand().register(this);
     new SetPlayerTimeCommand().register(this);
     new SetStartCommand().register(this);
+    new SetTimeShardDepositChest().register(this);
     new SetTreasureBeacon().register(this);
     new SetTreasureChestCommand().register(this);
 
@@ -80,6 +85,15 @@ public class App extends JavaPlugin {
 
     {
       Result<Boolean, ErrorReport<ErrorPathContext>> result = PlayerTrackerDataStore.initialize();
+      if (result.isError()) {
+        getLogger().warning(result.getError().pretty());
+        error = true;
+      }
+    }
+
+    {
+      Result<Boolean, ErrorReport<ErrorPathContext>> result =
+          TimeShardDepositChestDataStore.initialize();
       if (result.isError()) {
         getLogger().warning(result.getError().pretty());
         error = true;

@@ -33,6 +33,40 @@ public class PlayerUtils {
     }
   }
 
+  public static void givePlayerTimeSeconds(HumanEntity player, int seconds) {
+    if (seconds == 0) {
+      return;
+    }
+
+    Result<PlayerData, String> getPlayerDataResult =
+        PlayerTrackerDataStore.getStore().getPlayerData(player);
+
+    if (getPlayerDataResult.isOk()) {
+      Result<?, String> addTimeResult = getPlayerDataResult.getValue().addTimeSeconds(seconds);
+
+      if (addTimeResult.isOk()) {
+        if (seconds > 0) {
+          StringBuilder message = new StringBuilder();
+          message.append(ChatColor.LIGHT_PURPLE);
+          message.append("You have been awarded ");
+          message.append(ChatColor.BOLD);
+          message.append(TimeUtils.displaySeconds(seconds));
+          player.sendMessage(message.toString());
+          celebration(player);
+        } else {
+          player.sendMessage(
+              "You have been deducted " + TimeUtils.displaySeconds(seconds) + " points");
+        }
+      } else {
+        player.sendMessage(
+            "Failed to give you time (contact and admin): " + addTimeResult.getError());
+      }
+    } else {
+      player.sendMessage(
+          "Failed to give you time (contact and admin): " + getPlayerDataResult.getError());
+    }
+  }
+
   public static void givePlayerPoints(HumanEntity player, int points) {
     if (points == 0) {
       return;
