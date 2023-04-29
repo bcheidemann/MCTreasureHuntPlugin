@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.App;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.Checkpoint;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints.CheckpointDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorDetail;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
@@ -149,6 +151,16 @@ public class PlayerData {
     // Skip dead players
     if (player.isDead()) {
       return;
+    }
+
+    // Stop time if at checkpoints
+    for (Checkpoint checkpoint : CheckpointDataStore.getStore().checkpoints) {
+      if (checkpoint.type != Checkpoint.Type.CHECKPOINT) {
+        continue;
+      }
+      if (checkpoint.shape.contains(player.getLocation())) {
+        return;
+      }
     }
 
     timeRemainingSeconds -= 1;
