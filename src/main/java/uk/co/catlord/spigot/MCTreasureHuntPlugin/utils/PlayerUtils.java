@@ -106,9 +106,13 @@ public class PlayerUtils {
   }
 
   public static void celebration(HumanEntity player) {
+    celebration(player, false);
+  }
+
+  public static void celebration(HumanEntity player, boolean forceFireworks) {
     playCelebratorySound(player);
 
-    if (hasRoofOverhead(player, 16)) {
+    if (!forceFireworks && hasRoofOverhead(player, 16)) {
       return;
     }
 

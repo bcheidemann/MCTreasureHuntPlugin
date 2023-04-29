@@ -2,6 +2,7 @@ package uk.co.catlord.spigot.MCTreasureHuntPlugin.eventTriggers;
 
 import java.util.UUID;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.json.JSONObject;
@@ -18,6 +19,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.PlayerUtils;
 public abstract class EventTrigger {
   public enum EventTriggerType {
     COLLISION,
+    INTERACT_BLOCK,
   }
 
   public enum EventType {
@@ -66,7 +68,8 @@ public abstract class EventTrigger {
       try {
         uuid = UUID.fromString(value.getString("uuid"));
       } catch (IllegalArgumentException e) {
-        errorReportBuilder.addDetail(new ErrorReport<>(context, "Invalid 'uuid'"));
+        errorReportBuilder.addDetail(
+            new ErrorReport<>(context, "Invalid 'uuid': " + e.getMessage()));
       }
     }
 
@@ -75,7 +78,8 @@ public abstract class EventTrigger {
       try {
         type = EventTriggerType.valueOf(value.getString("type"));
       } catch (IllegalArgumentException e) {
-        errorReportBuilder.addDetail(new ErrorReport<>(context, "Invalid 'type'"));
+        errorReportBuilder.addDetail(
+            new ErrorReport<>(context, "Invalid 'type': " + e.getMessage()));
       }
     }
 
@@ -84,7 +88,8 @@ public abstract class EventTrigger {
       try {
         event = EventType.valueOf(value.getString("event"));
       } catch (IllegalArgumentException e) {
-        errorReportBuilder.addDetail(new ErrorReport<>(context, "Invalid 'event'"));
+        errorReportBuilder.addDetail(
+            new ErrorReport<>(context, "Invalid 'event': " + e.getMessage()));
       }
     }
 
@@ -97,6 +102,8 @@ public abstract class EventTrigger {
     switch (type) {
       case COLLISION:
         return CollisionEventTrigger.fromJsonObject(data, context, value);
+      case INTERACT_BLOCK:
+        return PlayerInteractBlockEventTrigger.fromJsonObject(data, context, value);
       default:
         return Result.error(new ErrorReport<>(context, "Unknown event trigger type"));
     }
@@ -149,7 +156,8 @@ public abstract class EventTrigger {
     PlayerUtils.sendTitleToPlayer(player, ChatColor.GOLD + "Finished!", "You completed the hunt");
     player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BELL_USE, 1, 1);
     BroadcastUtils.broadcastRaceEvent(player.getDisplayName() + " has completed the hunt!");
-    // TODO: Finish stuff
+    player.setGameMode(GameMode.SPECTATOR);
+    PlayerUtils.celebration(player, true);
   }
 
   private PlayerData getPlayerData(Player player) {
