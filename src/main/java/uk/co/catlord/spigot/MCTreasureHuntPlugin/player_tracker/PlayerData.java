@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -16,6 +17,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReportBuilder;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.parsers.json.JsonParser;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.utils.PlayerUtils;
 
 public class PlayerData {
@@ -33,6 +35,7 @@ public class PlayerData {
   private Set<String> visitedCheckpoints = new HashSet<>();
   private String currentCheckpointName = "START";
   private RaceStatus raceStatus = RaceStatus.NOT_STARTED;
+  public Location respawnPoint = null;
 
   private PlayerData() {}
 
@@ -92,6 +95,11 @@ public class PlayerData {
 
   public RaceStatus getRaceStatus() {
     return raceStatus;
+  }
+
+  public Result<Boolean, String> setRespawnPoint(Location respawnPoint) {
+    this.respawnPoint = respawnPoint;
+    return save();
   }
 
   public Result<Boolean, String> addOpenedTreasureChest(UUID treasureChestUuid) {
@@ -180,6 +188,7 @@ public class PlayerData {
     boolean hasVisitedCheckpoints = value.has("visitedCheckpoints");
     boolean hasCurrentCheckpointName = value.has("currentCheckpointName");
     boolean hasRaceStatus = value.has("raceStatus");
+    boolean hasRespawnPoint = value.has("respawnPoint");
 
     if (!hasUuid) {
       errorReportBuilder.addDetail(new ErrorDetail("Missing key 'uuid'"));
@@ -297,6 +306,22 @@ public class PlayerData {
       }
     }
 
+    if (hasRespawnPoint) {
+      try {
+        Result<Location, ErrorReport<ErrorPathContext>> jsonParseResult =
+            JsonParser.parseLocationJson(context, value.getJSONObject("respawnPoint"));
+
+        if (jsonParseResult.isError()) {
+          errorReportBuilder.addDetail(jsonParseResult.getError());
+        } else {
+          playerData.respawnPoint = jsonParseResult.getValue();
+        }
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail("Failed to parse 'respawnPoint' as Location: " + e.getMessage()));
+      }
+    }
+
     if (errorReportBuilder.hasErrors()) {
       return Result.error(errorReportBuilder.build());
     }
@@ -313,6 +338,9 @@ public class PlayerData {
     jsonObject.put("visitedCheckpoints", visitedCheckpoints);
     jsonObject.put("currentCheckpointName", currentCheckpointName);
     jsonObject.put("raceStatus", raceStatus.name());
+    if (respawnPoint != null) {
+      jsonObject.put("respawnPoint", JsonParser.generateLocationJson(respawnPoint));
+    }
     return jsonObject;
   }
 }

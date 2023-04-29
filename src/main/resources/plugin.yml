@@ -39,3 +39,6 @@ commands:
   set-time-shard-deposit-chest:
     description: Sets a chest as a time shard deposit chest
     usage: "Usage: /set-time-shard-deposit-chest <x> <y> <z>"
+  set-checkpoint-respawn-point:
+    description: Adds a respawn point to a checkpoint
+    usage: "Usage: /set-checkpoint-respawn-point <x> <y> <z> <checkpoint>"

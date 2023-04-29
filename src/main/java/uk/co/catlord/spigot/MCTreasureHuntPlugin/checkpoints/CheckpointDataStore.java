@@ -87,6 +87,7 @@ public class CheckpointDataStore extends JsonDataStore implements Listener {
           errorReportBuilder.addDetail(checkpointResult.getError());
         } else {
           this.checkpoints.add(checkpointResult.getValue());
+          checkpointResult.getValue().bindToCheckpointDataStore(instance);
         }
       }
 
@@ -118,10 +119,11 @@ public class CheckpointDataStore extends JsonDataStore implements Listener {
     }
 
     checkpoints.add(checkpoint);
+    checkpoint.bindToCheckpointDataStore(instance);
     return saveCheckpoints();
   }
 
-  private Result<Boolean, String> saveCheckpoints() {
+  public Result<Boolean, String> saveCheckpoints() {
     JSONArray checkpoints = new JSONArray();
 
     for (Checkpoint checkpoint : this.checkpoints) {

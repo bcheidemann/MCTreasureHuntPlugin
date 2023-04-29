@@ -2,6 +2,7 @@ package uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -12,6 +13,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorPathContext;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReport;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.ErrorReportBuilder;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.errors.Result;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.parsers.json.JsonParser;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerData;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.player_tracker.PlayerTrackerDataStore;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.shapes.Shape3D;
@@ -23,12 +25,15 @@ public class Checkpoint implements Listener {
     TREASURE_BEACON,
   }
 
+  private CheckpointDataStore instance;
+
   public String name;
   public String previousCheckpointName = null;
   public Shape3D shape;
   public Type type = Type.CHECKPOINT;
   public String trailFrom = null;
   public Color color = null;
+  public Location respawnPoint = null;
 
   private Checkpoint() {
     register();
@@ -50,6 +55,10 @@ public class Checkpoint implements Listener {
     register();
   }
 
+  public void bindToCheckpointDataStore(CheckpointDataStore instance) {
+    this.instance = instance;
+  }
+
   public static Result<Checkpoint, ErrorReport<ErrorPathContext>> fromJsonObject(
       ErrorPathContext context, JSONObject value) {
     Checkpoint checkpoint = new Checkpoint();
@@ -63,6 +72,7 @@ public class Checkpoint implements Listener {
     boolean hasType = value.has("type");
     boolean hasTrailFrom = value.has("trailFrom");
     boolean hasColor = value.has("color");
+    boolean hasRespawnPoint = value.has("respawnPoint");
 
     if (!hasName) {
       errorReportBuilder.addDetail(new ErrorReport<>(context, "Missing 'name'"));
@@ -151,6 +161,24 @@ public class Checkpoint implements Listener {
       }
     }
 
+    if (hasRespawnPoint) {
+      try {
+        JSONObject respawnPointJson = value.getJSONObject("respawnPoint");
+
+        Result<Location, ErrorReport<ErrorPathContext>> respawnPointParseResult =
+            JsonParser.parseLocationJson(context.extend("respawnPoint"), respawnPointJson);
+
+        if (respawnPointParseResult.isError()) {
+          errorReportBuilder.addDetail(respawnPointParseResult.getError());
+        }
+
+        checkpoint.respawnPoint = respawnPointParseResult.getValue();
+      } catch (Exception e) {
+        errorReportBuilder.addDetail(
+            new ErrorDetail("Failed to parse 'respawnPoint' as JSON object: " + e.getMessage()));
+      }
+    }
+
     // Return the result
     if (errorReportBuilder.hasErrors()) {
       return Result.error(errorReportBuilder.build());
@@ -168,6 +196,9 @@ public class Checkpoint implements Listener {
     jsonObject.put("trailFrom", trailFrom);
     if (color != null) {
       jsonObject.put("color", color.asRGB());
+    }
+    if (respawnPoint != null) {
+      jsonObject.put("respawnPoint", JsonParser.generateLocationJson(respawnPoint));
     }
 
     return jsonObject;
@@ -220,6 +251,19 @@ public class Checkpoint implements Listener {
       return;
     }
 
+    if (respawnPoint != null) {
+      Result<?, String> setRespawnPointResult = playerData.setRespawnPoint(respawnPoint);
+
+      if (setRespawnPointResult.isError()) {
+        event
+            .getPlayer()
+            .sendMessage(
+                "Failed to set respawn point (contact an admin): "
+                    + setRespawnPointResult.getError());
+        return;
+      }
+    }
+
     Result<Boolean, String> visitCheckpointResult = playerData.visitCheckpoint(name);
 
     if (visitCheckpointResult.isError()) {
@@ -262,6 +306,19 @@ public class Checkpoint implements Listener {
       return;
     }
 
+    if (respawnPoint != null) {
+      Result<?, String> setRespawnPointResult = playerData.setRespawnPoint(respawnPoint);
+
+      if (setRespawnPointResult.isError()) {
+        event
+            .getPlayer()
+            .sendMessage(
+                "Failed to set respawn point (contact an admin): "
+                    + setRespawnPointResult.getError());
+        return;
+      }
+    }
+
     Result<Boolean, String> visitTreasureBeaconCheckpointResult =
         playerData.visitTreasureBeaconCheckpoint(name);
 
@@ -279,5 +336,13 @@ public class Checkpoint implements Listener {
 
   public boolean isTreasureBeacon() {
     return type == Type.TREASURE_BEACON;
+  }
+
+  public Result<Boolean, String> setRespawnPoint(Location respawnPoint) {
+    this.respawnPoint = respawnPoint;
+    if (instance != null) {
+      return this.instance.saveCheckpoints();
+    }
+    return Result.ok(true);
   }
 }
