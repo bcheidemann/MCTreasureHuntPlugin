@@ -48,10 +48,10 @@ public class PlayerRespawnManager implements Listener {
 
       if (startCheckpoint.respawnPoint == null) {
         event.setRespawnLocation(startCheckpoint.shape.getCenter());
+        return;
       }
 
       event.setRespawnLocation(startCheckpoint.respawnPoint);
-
       return;
     }
     event.setRespawnLocation(playerData.respawnPoint);
