@@ -125,7 +125,7 @@ public class TimeShardDepositChestDataStore extends JsonDataStore {
       timeShardDepositChests.put(timeShardDepositChest.toJsonObject());
     }
 
-    data.put("timtimeShardDepositChestseShardDepositChests", timeShardDepositChests);
+    data.put("timeShardDepositChests", timeShardDepositChests);
 
     Result<?, ErrorReport<ErrorPathContext>> result = save();
 

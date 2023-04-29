@@ -43,6 +43,7 @@ public class App extends JavaPlugin {
     // Managers
     PoiTrailManager.register(this);
     TreasureChestInventoryManager.register(this);
+    TimeShardDepositChestBlockManager.register(this);
     TreasureChestBlockManager.register(this);
 
     // Commands
