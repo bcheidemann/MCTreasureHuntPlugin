@@ -36,3 +36,6 @@ commands:
   set-treasure-beacon:
     description: Set a treasure beacon
     usage: "Usage: /set-treasure-beacon <x> <y> <z> <name> <trail-from> <radius> <difficulty>"
+  set-time-shard-deposit-chest:
+    description: Sets a chest as a time shard deposit chest
+    usage: "Usage: /set-time-shard-deposit-chest <x> <y> <z>"
