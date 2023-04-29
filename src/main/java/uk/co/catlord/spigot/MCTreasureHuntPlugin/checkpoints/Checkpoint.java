@@ -1,6 +1,6 @@
 package uk.co.catlord.spigot.MCTreasureHuntPlugin.checkpoints;
 
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -261,6 +261,16 @@ public class Checkpoint implements Listener {
                 "Failed to set respawn point (contact an admin): "
                     + setRespawnPointResult.getError());
         return;
+      } else {
+        event
+            .getPlayer()
+            .sendMessage(
+                ChatColor.GRAY
+                    + "Your respawn point has been set "
+                    + ChatColor.BOLD
+                    + " ("
+                    + name
+                    + ")");
       }
     }
 
@@ -316,6 +326,16 @@ public class Checkpoint implements Listener {
                 "Failed to set respawn point (contact an admin): "
                     + setRespawnPointResult.getError());
         return;
+      } else {
+        event
+            .getPlayer()
+            .sendMessage(
+                ChatColor.GRAY
+                    + "Your respawn point has been set "
+                    + ChatColor.BOLD
+                    + " ("
+                    + name
+                    + ")");
       }
     }
 

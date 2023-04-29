@@ -56,6 +56,8 @@ public class SetCheckpointRespawnPointCommand extends RegisterableCommand {
       return true;
     }
 
+    options.player.sendMessage(ChatColor.GREEN + "Respawn point set successfully.");
+
     // Return true
     return true;
   }
