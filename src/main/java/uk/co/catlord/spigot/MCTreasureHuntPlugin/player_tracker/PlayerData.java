@@ -58,6 +58,18 @@ public class PlayerData {
     return Result.ok(true);
   }
 
+  public Result<Boolean, String> reset() {
+    points = 0;
+    openedTreasureChests = new HashSet<>();
+    timeRemainingSeconds = 60 * 60 * 3; // 3 hours
+    visitedCheckpoints = new HashSet<>();
+    currentCheckpointName = "START";
+    raceStatus = RaceStatus.NOT_STARTED;
+    respawnPoint = null;
+
+    return save();
+  }
+
   public Result<Boolean, String> visitCheckpoint(String checkpointName) {
     visitedCheckpoints.add(checkpointName);
     currentCheckpointName = checkpointName;

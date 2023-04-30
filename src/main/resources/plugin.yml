@@ -45,3 +45,6 @@ commands:
   scores:
     description: Display the scores of all players
     usage: "Usage: /scores"
+  rerun:
+    description: Rerun the treasure hunt
+    usage: "Usage: /rerun"
