@@ -6,6 +6,7 @@ import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.CompassCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.DeleteTreasureChestCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.GiveTreasureTokenCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.MyCommand;
+import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.RerunCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.ResetTreasureHuntCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.ScoresCommand;
 import uk.co.catlord.spigot.MCTreasureHuntPlugin.commands.SetCheckpointCommand;
@@ -53,6 +54,7 @@ public class App extends JavaPlugin {
     new DeleteTreasureChestCommand().register(this);
     new GiveTreasureTokenCommand().register(this);
     new MyCommand().register(this);
+    new RerunCommand().register(this);
     new ResetTreasureHuntCommand().register(this);
     new ScoresCommand().register(this);
     new SetCheckpointCommand().register(this);
