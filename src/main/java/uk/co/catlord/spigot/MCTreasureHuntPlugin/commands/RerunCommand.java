@@ -2,6 +2,7 @@ package uk.co.catlord.spigot.MCTreasureHuntPlugin.commands;
 
 import java.util.List;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -58,6 +59,7 @@ public class RerunCommand extends RegisterableCommand {
 
     player.getInventory().clear();
     player.setHealth(0);
+    player.setGameMode(GameMode.SURVIVAL);
 
     return true;
   }
