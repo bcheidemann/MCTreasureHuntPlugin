@@ -48,3 +48,6 @@ commands:
   rerun:
     description: Rerun the treasure hunt
     usage: "Usage: /rerun"
+  reset-player:
+    description: Reset a player
+    usage: "Usage: /reset-player <player>"
