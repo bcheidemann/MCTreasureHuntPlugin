@@ -158,6 +158,10 @@ public class PlayerTrackerDataStore extends JsonDataStore {
     return Result.ok(true);
   }
 
+  public PlayerData getExistingPlayerData(UUID uuid) {
+    return players.get(uuid);
+  }
+
   public Result<PlayerData, String> getPlayerData(HumanEntity player) {
     PlayerData playerData = players.get(player.getUniqueId());
 
